@@ -16,6 +16,8 @@ async def get_network_reasoning_summary(video_id: Optional[str] = None) -> Dict[
     return data
 
 
+@router.get("/congestion")
+@router.get("/{video_id}/congestion")
 @router.get("/congestion-origin")
 @router.get("/{video_id}/congestion-origin")
 async def get_congestion_origin(video_id: Optional[str] = None) -> Dict[str, Any]:

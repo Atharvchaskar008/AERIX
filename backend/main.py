@@ -107,3 +107,33 @@ async def health_check():
         "database_name": settings.MONGODB_DB_NAME,
         "pipeline_status": traffic_service.get_status()["status"],
     }
+
+
+# Dashboard Direct Route Aliases for Seamless Interop
+@app.get("/api/results", tags=["Traffic & Pipeline"])
+@app.get("/api/results/{video_id}", tags=["Traffic & Pipeline"])
+async def get_results_alias(video_id: Optional[str] = None):
+    results = await traffic_service.get_run_results(video_id)
+    if not results:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="No analytics results found.")
+    return results
+
+
+@app.get("/api/status", tags=["Traffic & Pipeline"])
+async def get_status_alias():
+    return traffic_service.get_status()
+
+
+@app.get("/api/frame", tags=["Traffic & Pipeline"])
+async def get_frame_alias():
+    from fastapi import Response
+    frame_bytes = traffic_service.get_latest_frame_bytes()
+    if not frame_bytes:
+        return Response(status_code=204)
+    return Response(
+        content=frame_bytes,
+        media_type="image/jpeg",
+        headers={"Cache-Control": "no-cache, no-store, must-revalidate"}
+    )
+
