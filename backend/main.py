@@ -90,7 +90,7 @@ app.include_router(telemetry_router)
 @app.get("/", tags=["Dashboard"])
 async def get_dashboard():
     """Serve the interactive AERIX analytics dashboard."""
-    dashboard_file = settings.PROJECT_ROOT / "demo_frontend.html"
+    dashboard_file = settings.PROJECT_ROOT / "dashboard.html"
     if dashboard_file.exists():
         return FileResponse(dashboard_file, media_type="text/html")
     return {"message": "AERIX API is running. Visit /docs for Swagger documentation."}

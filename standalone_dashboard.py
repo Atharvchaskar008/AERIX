@@ -23,7 +23,7 @@ PROJECT_ROOT = Path(__file__).parent.resolve()
 STORAGE_DIR = PROJECT_ROOT / "storage"
 VIDEOS_DIR = STORAGE_DIR / "videos"
 UPLOADS_DIR = STORAGE_DIR / "uploads"
-RESULTS_FILE = PROJECT_ROOT / "level1_results.json"
+RESULTS_FILE = PROJECT_ROOT / "traffic_analytics_results.json"
 
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
@@ -65,7 +65,7 @@ class AERIXHandler(SimpleHTTPRequestHandler):
         path = parsed.path
 
         if path == "/" or path == "/index.html":
-            self._serve_file(PROJECT_ROOT / "demo_frontend.html", "text/html")
+            self._serve_file(PROJECT_ROOT / "dashboard.html", "text/html")
         elif path == "/api/results":
             self._serve_json_results()
         elif path == "/api/status":

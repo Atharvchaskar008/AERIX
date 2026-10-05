@@ -69,6 +69,6 @@ if __name__ == "__main__":
         use_real_yolo=False,
     )
     import json
-    with open("level1_results.json", "w") as f:
+    with open("traffic_analytics_results.json", "w") as f:
         json.dump(res, f, indent=2, default=str)
     print("Level 1 sample demonstration generated successfully!")

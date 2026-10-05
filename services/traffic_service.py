@@ -37,7 +37,7 @@ class TrafficService:
         self._sync_initial_results()
 
     def _sync_initial_results(self):
-        """Loads level1_results.json and syncs to MongoDB if available."""
+        """Loads traffic_analytics_results.json and syncs to MongoDB if available."""
         results_file = settings.RESULTS_FILE
         if results_file.exists():
             try:

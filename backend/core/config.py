@@ -28,7 +28,7 @@ class Settings:
         self.UPLOAD_DIR: Path = self.STORAGE_DIR / "uploads"
         self.VIDEO_DIR: Path = self.STORAGE_DIR / "videos"
         self.RESULTS_DIR: Path = self.STORAGE_DIR / "results"
-        self.RESULTS_FILE: Path = PROJECT_ROOT / "level1_results.json"
+        self.RESULTS_FILE: Path = PROJECT_ROOT / "traffic_analytics_results.json"
 
         for directory in [self.STORAGE_DIR, self.UPLOAD_DIR, self.VIDEO_DIR, self.RESULTS_DIR]:
             directory.mkdir(parents=True, exist_ok=True)
