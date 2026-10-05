@@ -3,1460 +3,1943 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AERIX — Macroscopic & Object-Level Traffic Intelligence</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>AERIX — Autonomous Aerial Traffic Intelligence & Macroscopic Network Reasoning</title>
+    
+    <!-- Google Fonts: Sharp Sci-Fi Display (Orbitron, Rajdhani) + Crisp UI (Inter, Roboto) + Monospace (JetBrains Mono) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800;900&family=Rajdhani:wght@500;600;700&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet GIS Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <style>
+        /* ═════════════════════════════════════════════════════════════════════
+           AERIX TACTICAL LIGHT HUD SYSTEM — PRISTINE WHITE & MONOCHROME
+           ═════════════════════════════════════════════════════════════════════ */
         :root {
-            --bg-primary: #0a0e1a;
-            --bg-secondary: #111827;
-            --bg-card: #1a2036;
-            --bg-card-hover: #1f2847;
-            --accent: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.3);
-            --cyan: #06b6d4;
-            --purple: #8b5cf6;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
+            /* Pure Whites & Light Backgrounds */
+            --bg-canvas: #ffffff;
+            --bg-subtle: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-card-hover: #fafafa;
+            --bg-elevated: #f1f5f9;
+            --bg-dark-panel: #09090b;
+
+            /* Crisp High-Contrast Typographic Hierarchy */
+            --text-primary: #09090b;
+            --text-heading: #000000;
+            --text-secondary: #334155;
+            --text-body: #475569;
             --text-muted: #64748b;
-            --border: #1e293b;
-            --border-accent: rgba(59, 130, 246, 0.3);
+            --text-faint: #94a3b8;
+            --text-inverse: #ffffff;
+
+            /* Razor-Sharp Engineering Borders */
+            --border-subtle: #f1f5f9;
+            --border-light: #e2e8f0;
+            --border-medium: #cbd5e1;
+            --border-dark: #09090b;
+            --border-sharp: #18181b;
+
+            /* Tactical Accents */
+            --accent-black: #09090b;
+            --accent-graphite: #27272a;
+            --alert-danger: #dc2626;
+            --alert-danger-bg: #fef2f2;
+            --alert-warning: #d97706;
+            --alert-warning-bg: #fffbeb;
+            --alert-success: #16a34a;
+            --alert-success-bg: #f0fdf4;
+            --radar-blue: #0284c7;
+
+            /* Typography Families */
+            --font-display: 'Orbitron', -apple-system, sans-serif;
+            --font-tactical: 'Rajdhani', -apple-system, sans-serif;
+            --font-ui: 'Inter', -apple-system, sans-serif;
+            --font-readout: 'Roboto', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            /* Shadows & Depth */
+            --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-card: 0 4px 16px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+            --shadow-float: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
+        }
+
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg-primary);
+            font-family: var(--font-ui);
+            background-color: var(--bg-canvas);
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
+            letter-spacing: -0.01em;
+            
+            /* Subtle Technical Engineering Overlay Patterns */
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+                linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+            background-size: 24px 24px, 48px 48px, 48px 48px;
+            background-position: 0 0, 0 0, 0 0;
         }
 
-        /* ── Header ─────────────────────────────── */
-        .header {
-            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
+        /* ── Subtle Ambient Technical Watermarks ─────────────────────────── */
+        body::before {
+            content: 'UAV-OPTICAL // 18.5590°N 73.7868°E // WGS84 // EPSG:4326 // CALIBRATED';
+            position: fixed;
+            bottom: 8px;
+            right: 18px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            letter-spacing: 0.15em;
+            z-index: 9999;
+        }
+
+        /* ── Scrollbars ─────────────────────────────────────────────────── */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-subtle);
+            border-left: 1px solid var(--border-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-medium);
+            border-radius: 0px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* ── Header Bar ─────────────────────────────────────────────────── */
+        .hud-header {
+            background: rgba(255, 255, 255, 0.94);
+            border-bottom: 2px solid var(--border-dark);
+            padding: 0.9rem 2.25rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
-            z-index: 100;
-            backdrop-filter: blur(20px);
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .logo-icon {
-            width: 40px; height: 40px;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; font-weight: 800; color: white;
-        }
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-        }
-        .logo-subtitle {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .header-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-        .status-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+            z-index: 1000;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
         }
 
-        /* ── Main Layout ────────────────────────── */
-        .main {
-            max-width: 1520px;
+        .hud-logo-cluster {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .hud-logo-symbol {
+            width: 44px;
+            height: 44px;
+            background: var(--accent-black);
+            border: 2px solid var(--accent-black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+        }
+
+        .hud-logo-symbol svg {
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: #ffffff;
+            stroke-width: 2.2;
+        }
+
+        .hud-logo-title {
+            font-family: var(--font-display);
+            font-size: 1.65rem;
+            font-weight: 900;
+            color: var(--text-heading);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            line-height: 1;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        .hud-logo-title span {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            background: var(--accent-black);
+            color: #ffffff;
+            letter-spacing: 0.06em;
+        }
+
+        .hud-logo-sub {
+            font-family: var(--font-tactical);
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            margin-top: 0.25rem;
+        }
+
+        .hud-header-meta {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .hud-status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.5rem 1.1rem;
+            background: #ffffff;
+            border: 1px solid var(--border-medium);
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .hud-radar-dot {
+            width: 9px;
+            height: 9px;
+            background: var(--alert-success);
+            box-shadow: 0 0 8px rgba(22, 163, 74, 0.4);
+            animation: radarPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes radarPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* ── Main Tactical Canvas ───────────────────────────────────────── */
+        .hud-canvas {
+            max-width: 1680px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 2rem 2.25rem 4rem;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
-        .top-grid {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 1.5rem;
-        }
-
-        /* ── Video Player ───────────────────────── */
-        .video-panel {
+        /* ── Tactical White HUD Card Container ──────────────────────────── */
+        .hud-card {
             background: var(--bg-card);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            overflow: hidden;
+            border: 1px solid var(--border-light);
+            position: relative;
+            box-shadow: var(--shadow-card);
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .video-panel-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
+
+        .hud-card:hover {
+            border-color: var(--border-medium);
+            box-shadow: var(--shadow-float);
+        }
+
+        /* Sharp Angular Black Corner Brackets */
+        .hud-card::before,
+        .hud-card::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: var(--border-dark);
+            pointer-events: none;
+            z-index: 5;
+        }
+        .hud-card::before {
+            top: -1px;
+            left: -1px;
+            border-top: 2px solid var(--border-dark);
+            border-left: 2px solid var(--border-dark);
+        }
+        .hud-card::after {
+            bottom: -1px;
+            right: -1px;
+            border-bottom: 2px solid var(--border-dark);
+            border-right: 2px solid var(--border-dark);
+        }
+
+        .hud-card-header {
+            padding: 0.95rem 1.4rem;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-light);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 1rem;
         }
-        .video-panel-header h2 {
-            font-size: 1rem;
-            font-weight: 600;
-        }
-        .badge {
-            font-size: 0.7rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 100px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-        .badge-processing { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
-        .badge-idle { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); }
-        .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
-        .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
 
-        .video-container {
-            position: relative;
-            background: #000;
-            aspect-ratio: 16/9;
+        .hud-card-title {
+            font-family: var(--font-display);
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
         }
-        .video-container video {
+
+        .hud-card-title svg {
+            width: 17px;
+            height: 17px;
+            stroke: var(--text-heading);
+            fill: none;
+            stroke-width: 2.2;
+        }
+
+        .hud-card-body {
+            padding: 1.4rem;
+            background: #ffffff;
+        }
+
+        /* ── Grid Layouts ───────────────────────────────────────────────── */
+        .grid-hero {
+            display: grid;
+            grid-template-columns: 1fr 440px;
+            gap: 2rem;
+        }
+
+        .grid-3col {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .grid-5col {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 1280px) {
+            .grid-hero { grid-template-columns: 1fr; }
+            .grid-3col { grid-template-columns: 1fr; }
+            .grid-2col { grid-template-columns: 1fr; }
+            .grid-5col { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* ── Video Telemetry Console ────────────────────────────────────── */
+        .video-viewport-frame {
+            position: relative;
+            background: #000000;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .video-viewport-frame video,
+        .video-viewport-frame img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            display: block;
         }
-        .video-placeholder {
+
+        /* Tactical Crosshairs & Reticle Overlay */
+        .reticle-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .reticle-crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 64px;
+            height: 64px;
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+
+        .reticle-crosshair::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -16px;
+            right: -16px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .reticle-crosshair::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: -16px;
+            bottom: -16px;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .reticle-corner-tl { position: absolute; top: 14px; left: 14px; width: 16px; height: 16px; border-top: 2px solid rgba(255,255,255,0.6); border-left: 2px solid rgba(255,255,255,0.6); }
+        .reticle-corner-tr { position: absolute; top: 14px; right: 14px; width: 16px; height: 16px; border-top: 2px solid rgba(255,255,255,0.6); border-right: 2px solid rgba(255,255,255,0.6); }
+        .reticle-corner-bl { position: absolute; bottom: 14px; left: 14px; width: 16px; height: 16px; border-bottom: 2px solid rgba(255,255,255,0.6); border-left: 2px solid rgba(255,255,255,0.6); }
+        .reticle-corner-br { position: absolute; bottom: 14px; right: 14px; width: 16px; height: 16px; border-bottom: 2px solid rgba(255,255,255,0.6); border-right: 2px solid rgba(255,255,255,0.6); }
+
+        .reticle-telemetry-stamp {
+            position: absolute;
+            bottom: 14px;
+            left: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 0.3rem 0.7rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            letter-spacing: 0.08em;
+        }
+
+        .video-placeholder-tactical {
             position: absolute;
             inset: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
-            color: var(--text-muted);
-        }
-        .video-placeholder svg {
-            width: 64px; height: 64px;
-            opacity: 0.3;
+            gap: 1.25rem;
+            color: var(--text-faint);
+            background: #09090b;
         }
 
-        .video-controls {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--border);
+        .video-placeholder-tactical svg {
+            width: 56px;
+            height: 56px;
+            stroke: #52525b;
+            fill: none;
+        }
+
+        .video-controls-bar {
+            padding: 1rem 1.4rem;
+            background: #ffffff;
             display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        /* ── Sharp Angular Buttons (Black on White) ─────────────────────── */
+        .btn-hud {
+            font-family: var(--font-tactical);
+            font-size: 0.88rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.7rem 1.4rem;
+            background: #ffffff;
+            color: var(--text-heading);
+            border: 1.5px solid var(--border-dark);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            position: relative;
+            transition: all 0.18s ease;
+            box-shadow: var(--shadow-subtle);
+            clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+        }
+
+        .btn-hud:hover:not(:disabled) {
+            background: var(--accent-black);
+            color: #ffffff;
+            border-color: var(--accent-black);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .btn-hud-primary {
+            background: var(--accent-black);
+            color: #ffffff;
+            border-color: var(--accent-black);
+        }
+
+        .btn-hud-primary:hover:not(:disabled) {
+            background: #27272a;
+            border-color: #27272a;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-hud-danger {
+            border-color: var(--alert-danger);
+            color: var(--alert-danger);
+            background: #ffffff;
+        }
+
+        .btn-hud-danger:hover:not(:disabled) {
+            background: var(--alert-danger);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .btn-hud:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            border-color: var(--border-medium);
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn-hud svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.2;
+        }
+
+        /* ── Metric Display Units (Roboto & Orbitron Readouts) ──────────── */
+        .metric-unit-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.1rem;
+        }
+
+        .metric-cell {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-light);
+            padding: 1.15rem 1.25rem;
+            position: relative;
+            box-shadow: var(--shadow-subtle);
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .metric-cell:hover {
+            border-color: var(--border-medium);
+            background-color: #ffffff;
+        }
+
+        .metric-value {
+            font-family: var(--font-readout);
+            font-size: 1.95rem;
+            font-weight: 800;
+            color: var(--text-heading);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .metric-label {
+            font-family: var(--font-tactical);
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-top: 0.45rem;
+        }
+
+        .metric-cell-danger .metric-value { color: var(--alert-danger); }
+        .metric-cell-warning .metric-value { color: var(--alert-warning); }
+
+        /* ── Status Badges ──────────────────────────────────────────────── */
+        .badge-hud {
+            font-family: var(--font-tactical);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 0.28rem 0.7rem;
+            border: 1px solid var(--border-medium);
+            background: #ffffff;
+            color: var(--text-secondary);
+        }
+
+        .badge-hud-stark {
+            border-color: var(--accent-black);
+            background: var(--accent-black);
+            color: #ffffff;
+        }
+
+        .badge-hud-success {
+            border-color: #86efac;
+            color: var(--alert-success);
+            background: var(--alert-success-bg);
+        }
+
+        .badge-hud-warning {
+            border-color: #fde68a;
+            color: var(--alert-warning);
+            background: var(--alert-warning-bg);
+        }
+
+        .badge-hud-danger {
+            border-color: #fca5a5;
+            color: var(--alert-danger);
+            background: var(--alert-danger-bg);
+        }
+
+        /* ── Linear HUD Progress & Capacity Bars ────────────────────────── */
+        .hud-bar-track {
+            width: 100%;
+            height: 7px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-light);
+            margin: 0.4rem 0 0.85rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hud-bar-fill {
+            height: 100%;
+            background: var(--accent-black);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hud-bar-fill-danger {
+            background: var(--alert-danger);
+        }
+
+        .hud-bar-fill-warning {
+            background: var(--alert-warning);
+        }
+
+        /* ── Vehicle Class Rows (Inter & Roboto) ────────────────────────── */
+        .class-row-hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.88rem;
+        }
+
+        .class-row-hud:last-child {
+            border-bottom: none;
+        }
+
+        .class-info-hud {
+            display: flex;
+            align-items: center;
             gap: 0.75rem;
         }
 
-        /* ── Buttons ────────────────────────────── */
-        .btn {
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #2563eb);
-            color: white;
-            box-shadow: 0 4px 14px var(--accent-glow);
-        }
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px var(--accent-glow);
-        }
-        .btn-secondary {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-        .btn-secondary:hover { background: var(--bg-card-hover); }
-        .btn-success {
-            background: linear-gradient(135deg, var(--success), #059669);
-            color: white;
-        }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* ── Right Sidebar ──────────────────────── */
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-        }
-        .card-header {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .card-body { padding: 1.25rem; }
-
-        /* ── Stats Grid ─────────────────────────── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        .stat-item {
-            background: var(--bg-secondary);
-            padding: 1rem;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            transition: transform 0.2s;
-        }
-        .stat-item:hover {
-            transform: translateY(-2px);
-            border-color: var(--border-accent);
-        }
-        .stat-value {
-            font-size: 1.45rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1.1;
-        }
-        .stat-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-top: 0.35rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .stat-highlight { color: var(--cyan); }
-        .stat-purple { color: var(--purple); }
-
-        /* ── Macroscopic Sections ───────────────── */
-        .macro-grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 1.5rem;
-        }
-        .macro-grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        /* ── Class Distribution ─────────────────── */
-        .class-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.85rem;
-        }
-        .class-row:last-child { border-bottom: none; }
-        .class-info {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .class-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-        }
-        .dot-car, .dot-sedan { background: #3b82f6; }
-        .dot-suv { background: #60a5fa; }
-        .dot-hatchback { background: #2563eb; }
-        .dot-van { background: #93c5fd; }
-        .dot-truck, .dot-hgv { background: #ef4444; }
-        .dot-lgv { background: #f87171; }
-        .dot-bus, .dot-transit_bus { background: #f59e0b; }
-        .dot-minibus { background: #fbbf24; }
-        .dot-motorcycle, .dot-scooter { background: #eab308; }
-        .dot-person, .dot-pedestrian { background: #10b981; }
-        .dot-bicycle { background: #d946ef; }
-
-        .class-name { text-transform: capitalize; font-weight: 500; }
-        .class-count {
-            background: var(--bg-secondary);
-            padding: 0.2rem 0.5rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        /* ── Analytics Data Cards & Bars ────────── */
-        .bar-container {
+        .class-marker {
+            width: 8px;
             height: 8px;
-            background: var(--bg-secondary);
-            border-radius: 100px;
-            overflow: hidden;
-            margin: 0.35rem 0 0.85rem;
-        }
-        .bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--cyan));
-            border-radius: 100px;
-        }
-        .bar-fill-danger {
-            background: linear-gradient(90deg, var(--warning), var(--danger));
+            background: var(--accent-black);
         }
 
-        /* ── Tables ─────────────────────────────── */
-        .kinematics-section {
-            background: var(--bg-card);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            overflow: hidden;
+        .class-name-hud {
+            font-family: var(--font-ui);
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: capitalize;
+            font-size: 0.85rem;
         }
-        .table-toolbar {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
+
+        .class-count-hud {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 700;
+            background: var(--bg-subtle);
+            padding: 0.2rem 0.6rem;
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+        }
+
+        /* ── Data Tables (Crisp Inter & JetBrains Mono) ─────────────────── */
+        .table-toolbar-hud {
+            padding: 1.1rem 1.4rem;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-light);
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             flex-wrap: wrap;
             gap: 1rem;
         }
-        .search-input {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
+
+        .hud-search-input {
+            font-family: var(--font-ui);
+            font-size: 0.84rem;
+            background: var(--bg-subtle);
+            border: 1.5px solid var(--border-medium);
             color: var(--text-primary);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            outline: none;
-            width: 260px;
+            padding: 0.65rem 1.1rem;
+            width: 340px;
+            letter-spacing: -0.01em;
+            transition: border-color 0.2s, background-color 0.2s;
         }
-        .search-input:focus { border-color: var(--accent); }
-        .table-responsive {
-            max-height: 440px;
+
+        .hud-search-input:focus {
+            border-color: var(--accent-black);
+            background: #ffffff;
+        }
+
+        .table-responsive-hud {
+            max-height: 480px;
             overflow-y: auto;
         }
-        table.kin-table {
+
+        table.hud-table {
             width: 100%;
             border-collapse: collapse;
+            font-family: var(--font-ui);
+            font-size: 0.86rem;
             text-align: left;
-            font-size: 0.85rem;
         }
-        table.kin-table th {
-            background: var(--bg-secondary);
-            padding: 0.85rem 1.25rem;
-            font-size: 0.75rem;
+
+        table.hud-table th {
+            font-family: var(--font-display);
+            font-size: 0.72rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border);
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            background: var(--bg-subtle);
+            padding: 0.95rem 1.25rem;
+            border-bottom: 1.5px solid var(--border-medium);
             position: sticky;
             top: 0;
             z-index: 10;
         }
-        table.kin-table td {
-            padding: 0.85rem 1.25rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        table.kin-table tr:hover td {
-            background: rgba(59, 130, 246, 0.04);
+
+        table.hud-table td {
+            padding: 0.95rem 1.25rem;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            color: var(--text-body);
         }
 
-        .pill {
+        table.hud-table tr:hover td {
+            background: rgba(0, 0, 0, 0.02);
+            color: var(--text-heading);
+        }
+
+        .pill-hud {
             display: inline-block;
-            padding: 0.2rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-family: var(--font-tactical);
+            font-size: 0.74rem;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.2rem 0.6rem;
+            border: 1px solid var(--border-medium);
+            background: var(--bg-subtle);
+            color: var(--text-heading);
         }
-        .pill-sedan, .pill-car { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-        .pill-suv { background: rgba(96, 165, 250, 0.15); color: #93c5fd; }
-        .pill-van { background: rgba(147, 197, 253, 0.15); color: #bfdbfe; }
-        .pill-hgv, .pill-truck { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-        .pill-lgv { background: rgba(248, 113, 113, 0.15); color: #fca5a5; }
-        .pill-bus, .pill-transit_bus, .pill-coach_bus, .pill-minibus { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-        .pill-motorcycle, .pill-scooter { background: rgba(234, 179, 8, 0.15); color: #fef08a; }
-        .pill-pedestrian, .pill-person { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
-        .pill-bicycle { background: rgba(217, 70, 239, 0.15); color: #f0abfc; }
 
-        .progress-bar-container {
+        /* ── Leaflet Pristine Light GIS Basemap ─────────────────────────── */
+        #spatialMap {
             width: 100%;
-            height: 6px;
-            background: var(--bg-secondary);
-            border-radius: 100px;
-            overflow: hidden;
-            margin-top: 0.5rem;
+            height: 460px;
+            background: #f8fafc;
         }
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), #8b5cf6);
-            width: 0%;
-            transition: width 0.3s;
+        
+        .leaflet-container {
+            background: #f8fafc !important;
+            font-family: var(--font-mono) !important;
         }
-        .hidden { display: none !important; }
 
-        .config-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.4rem 0;
-            font-size: 0.8rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        .leaflet-popup-content-wrapper {
+            background: #ffffff !important;
+            color: #09090b !important;
+            border: 1.5px solid var(--border-dark) !important;
+            border-radius: 0px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
         }
-        .config-key { color: var(--text-muted); }
-        .config-val { color: var(--text-primary); font-weight: 500; }
 
-        /* ── Direction Flow Diagram ─────────────── */
-        .flow-diagram-card { margin-bottom: 2rem; }
-        .flow-diagram-container {
+        .leaflet-popup-tip {
+            background: #ffffff !important;
+            border: 1.5px solid var(--border-dark) !important;
+        }
+
+        /* ── Direction Flow Diagram Light Blueprint ─────────────────────── */
+        .flow-blueprint-box {
             position: relative;
             width: 100%;
-            aspect-ratio: 16 / 10;
-            min-height: 400px;
-            background: radial-gradient(ellipse at center, #0f1629 0%, #090d16 100%);
-            border-radius: 0 0 12px 12px;
+            aspect-ratio: 16/10;
+            min-height: 420px;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border-light);
             overflow: hidden;
         }
-        .flow-diagram-container svg { width: 100%; height: 100%; }
 
-        @keyframes flowDash {
-            to { stroke-dashoffset: -40; }
-        }
-        .flow-arrow-animated {
-            animation: flowDash 1s linear infinite;
+        .flow-blueprint-box svg {
+            width: 100%;
+            height: 100%;
         }
 
-        .flow-legend {
+        .flow-blueprint-legend {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
-            padding: 0.75rem 1.25rem;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            font-size: 0.75rem;
+            gap: 1.75rem;
+            padding: 0.95rem 1.4rem;
+            background: #ffffff;
+            font-family: var(--font-tactical);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
             color: var(--text-secondary);
         }
-        .flow-legend-item {
+
+        .flow-legend-chip {
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.6rem;
         }
-        .flow-legend-swatch {
-            width: 20px;
+
+        .flow-chip-line {
+            width: 24px;
             height: 4px;
-            border-radius: 2px;
         }
+
+        @keyframes laserDashLight {
+            to { stroke-dashoffset: -40; }
+        }
+        .laser-animated-light {
+            animation: laserDashLight 1.2s linear infinite;
+        }
+
+        /* ── Causal Narrative Console ───────────────────────────────────── */
+        .causal-console-box {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-medium);
+            padding: 1.6rem;
+            font-family: var(--font-readout);
+            font-size: 0.92rem;
+            line-height: 1.8;
+            color: var(--text-body);
+            position: relative;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .causal-console-box::before {
+            content: 'SYSTEM DIAGNOSTIC LOG // SPATIO-TEMPORAL CAUSAL GRAPH';
+            position: absolute;
+            top: -10px;
+            left: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.66rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            background: #ffffff;
+            padding: 0.1rem 0.6rem;
+            border: 1px solid var(--border-medium);
+            color: var(--text-muted);
+        }
+
+        .config-row-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.55rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.82rem;
+        }
+
+        .config-key-hud {
+            font-family: var(--font-tactical);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .config-val-hud {
+            font-family: var(--font-mono);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<!-- Header -->
-<header class="header">
-    <div class="logo">
-        <div class="logo-icon">▲</div>
-        <div>
-            <div class="logo-text">AERIX</div>
-            <div class="logo-subtitle">Macroscopic & Spatial Traffic Intelligence</div>
-        </div>
-    </div>
-    <div class="header-status">
-        <div class="status-dot" id="statusDot"></div>
-        <span id="statusText">Loading...</span>
-    </div>
-</header>
-
-<!-- Main Container -->
-<main class="main">
-
-    <!-- Top Grid: Video Player + Sidebar -->
-    <div class="top-grid">
-
-        <!-- Left: Video Player -->
-        <div class="video-panel">
-            <div class="video-panel-header">
-                <h2>🛰️ Aerial Drone Tracking & Macro Analytics Stream</h2>
-                <span class="badge badge-idle" id="videoBadge">Idle</span>
-            </div>
-            <div class="video-container">
-                <video id="videoPlayer" controls autoplay loop muted playsinline></video>
-                <img id="liveStreamImg" class="hidden" alt="Live Tracking Stream" style="width:100%; height:100%; object-fit:contain; background:#000;">
-                <div class="video-placeholder" id="videoPlaceholder">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                    <span>Upload a video or view processed stream</span>
-                </div>
-            </div>
-            <div class="video-controls">
-                <label class="btn btn-primary" id="uploadBtn">
-                    📁 Upload Video
-                    <input type="file" accept="video/*" id="fileInput" style="display:none">
-                </label>
-                <button class="btn btn-success" id="processBtn" disabled>
-                    ▶ Process
-                </button>
-                <button class="btn btn-secondary" id="reprocessBtn" disabled>
-                    🔄 Re-process
-                </button>
-            </div>
-            <div id="processingStatus" class="hidden" style="padding: 0 1.5rem 1rem;">
-                <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;">
-                    <span id="processingText">Processing...</span>
-                    <span id="processingPct">0%</span>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right: Macroscopic Flow & Density Overview -->
-        <div class="sidebar">
-
-            <!-- Macroscopic Flow Card -->
-            <div class="card">
-                <div class="card-header">
-                    <span>📊 Macroscopic Flow & Density</span>
-                    <span class="badge badge-success" id="badgeLOS">LOS A</span>
-                </div>
-                <div class="card-body">
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-value stat-highlight" id="statDensity">—</div>
-                            <div class="stat-label">Density (veh/km)</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value stat-highlight" id="statOccupancy">—</div>
-                            <div class="stat-label">Area Occupancy %</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value stat-purple" id="statFlowRate">—</div>
-                            <div class="stat-label">Flow (veh/hour)</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value stat-purple" id="statAvgSpeed">—</div>
-                            <div class="stat-label">Mean Speed (km/h)</div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 1rem; padding: 0.75rem; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border);">
-                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">MFD Congestion State</div>
-                        <div style="font-size: 0.85rem; font-weight: 600; color: #38bdf8; margin-top: 2px;" id="mfdState">Free-Flow Branch</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Fine-Grained Class Breakdown -->
-            <div class="card">
-                <div class="card-header">
-                    <span>🚗 Vehicle Classification</span>
-                    <span style="font-size:0.7rem; color:var(--cyan);">Fine-Grained</span>
-                </div>
-                <div class="card-body" id="fineClassDistribution">
-                    <div style="color: var(--text-muted); font-size: 0.85rem;">No data yet</div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Middle: 3-Column Macroscopic Spatial Intelligence Grid -->
-    <div class="macro-grid-3">
-
-        <!-- 1. Turning Movements & Directional Flow -->
-        <div class="card">
-            <div class="card-header">
-                <span>🔀 Intersection Turning Counts</span>
-                <span style="font-size:0.7rem; color:var(--cyan);" id="totalMovements">0 Trips</span>
-            </div>
-            <div class="card-body" id="turningMovementsBody">
-                <div style="color: var(--text-muted); font-size: 0.85rem;">No turning data yet</div>
-            </div>
-        </div>
-
-        <!-- 2. Queue Length & Delay Estimation -->
-        <div class="card">
-            <div class="card-header">
-                <span>🛑 Queue Length & Delays</span>
-                <span class="badge badge-idle" id="queueBadge">Free Flow</span>
-            </div>
-            <div class="card-body">
-                <div class="stats-grid" style="margin-bottom: 1rem;">
-                    <div class="stat-item">
-                        <div class="stat-value" style="color: #f87171;" id="statQueueLength">0.0 m</div>
-                        <div class="stat-label">Max Queue Length</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="statQueuedVehicles">0</div>
-                        <div class="stat-label">Vehicles in Queue</div>
-                    </div>
-                </div>
-                <div class="config-row"><span class="config-key">Avg Queue Delay</span><span class="config-val" id="statQueueDelay">0.0s</span></div>
-                <div class="config-row"><span class="config-key">Queue Threshold</span><span class="config-val">&le; 6.0 km/h</span></div>
-                <div class="config-row"><span class="config-key">Dwell Condition</span><span class="config-val">&ge; 1.5s standstill</span></div>
-            </div>
-        </div>
-
-        <!-- 3. Speed Profiles & Speeding Hotspots -->
-        <div class="card">
-            <div class="card-header">
-                <span>📈 Segment Speed Profiles & Hotspots</span>
-                <span style="font-size:0.7rem; color:var(--warning);" id="speedLimitTag">Limit: 50 km/h</span>
-            </div>
-            <div class="card-body" id="speedProfilesBody">
-                <div style="color: var(--text-muted); font-size: 0.85rem;">No segment speed data yet</div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Middle 2: 2-Column Lane Modal Split & Origin-Destination Grid -->
-    <div class="macro-grid-2">
-
-        <!-- Lane Volume & Modal Split -->
-        <div class="card">
-            <div class="card-header">
-                <span>🛣️ Lane Volume & Modal Split by Lane</span>
-                <span style="font-size:0.7rem; color:var(--text-muted);" id="laneTotalVolume">Total: 0</span>
-            </div>
-            <div class="card-body" id="laneModalBody">
-                <div style="color: var(--text-muted); font-size: 0.85rem;">No lane volume data yet</div>
-            </div>
-        </div>
-
-        <!-- Origin-Destination Matrix -->
-        <div class="card">
-            <div class="card-header">
-                <span>🌐 Origin–Destination (O-D) Distributions</span>
-                <span style="font-size:0.7rem; color:var(--cyan);">Approach Routes</span>
-            </div>
-            <div class="card-body" id="odMatrixBody">
-                <div style="color: var(--text-muted); font-size: 0.85rem;">No O-D data yet</div>
-            </div>
-    </div>
-
-    <!-- Map-Native Spatial Grounding & Road Network Card -->
-    <div class="card" style="margin-bottom: 2rem;">
-        <div class="card-header">
-            <span>🗺️ Map-Native Spatial Grounding & Road Network Binding</span>
-            <div style="display:flex; gap:0.75rem; align-items:center;">
-                <span class="badge badge-success" id="badgeSpatialGrounded">WGS84 Grounded</span>
-                <span style="font-size:0.75rem; color:var(--cyan);" id="telemetrySummaryTag">Drone GPS: 37.7749°, -122.4194° | Alt: 85m | Pitch: -90°</span>
-            </div>
-        </div>
-        <div class="card-body" style="padding: 0;">
-            <div id="spatialMap" style="width: 100%; height: 440px; border-radius: 0 0 12px 12px; background: #090d16;"></div>
-        </div>
-    </div>
-
-    <!-- Traffic Direction Flow Diagram -->
-    <div class="card flow-diagram-card">
-        <div class="card-header">
-            <span>🧭 Traffic Direction Flow Diagram</span>
-            <div style="display:flex; gap:0.75rem; align-items:center;">
-                <span class="badge badge-success" id="badgeFlowDiagram">Live Flows</span>
-                <span style="font-size:0.75rem; color:var(--text-muted);" id="flowDiagramSummary">Approach directions &amp; turning movement volumes</span>
-            </div>
-        </div>
-        <div class="card-body" style="padding: 0;">
-            <div class="flow-diagram-container" id="flowDiagramContainer">
-                <svg id="flowDiagramSVG" viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Will be populated by JS -->
-                    <text x="480" y="300" text-anchor="middle" fill="#475569" font-size="14" font-family="Inter, sans-serif">Process a video to see traffic direction flows</text>
+    <!-- ── Header Bar ─────────────────────────────────────────────────── -->
+    <header class="hud-header">
+        <div class="hud-logo-cluster">
+            <div class="hud-logo-symbol">
+                <svg viewBox="0 0 24 24">
+                    <polygon points="12 2 2 22 22 22 12 2"></polygon>
+                    <line x1="12" y1="11" x2="12" y2="17"></line>
+                    <circle cx="12" cy="19" r="0.5" fill="currentColor"></circle>
                 </svg>
             </div>
-            <div class="flow-legend" id="flowDiagramLegend">
-                <div class="flow-legend-item"><div class="flow-legend-swatch" style="background:#3b82f6;"></div>Through</div>
-                <div class="flow-legend-item"><div class="flow-legend-swatch" style="background:#8b5cf6;"></div>Left Turn</div>
-                <div class="flow-legend-item"><div class="flow-legend-swatch" style="background:#ec4899;"></div>Right Turn</div>
-                <div class="flow-legend-item"><div class="flow-legend-swatch" style="background:#f59e0b;"></div>U-Turn</div>
-                <div class="flow-legend-item"><div class="flow-legend-swatch" style="background:#10b981;"></div>Approaching</div>
-                <div class="flow-legend-item"><div class="flow-legend-swatch" style="background:#ef4444;"></div>Queue Extent</div>
-            </div>
-        </div>
-    <!-- 🧠 Network Reasoning & Spatial-Temporal Intelligence Section -->
-    <div class="card" style="margin-bottom: 2rem; border: 1px solid rgba(139, 92, 246, 0.4); background: linear-gradient(180deg, #13192e 0%, #0d1222 100%);">
-        <div class="card-header" style="border-bottom: 1px solid rgba(139, 92, 246, 0.2);">
-            <span>🧠 Spatial-Temporal Network Reasoning & Causal Intelligence (Baner Corridor)</span>
-            <div style="display:flex; gap:0.75rem; align-items:center;">
-                <span class="badge badge-purple" style="background: rgba(139, 92, 246, 0.2); color: #c084fc; border: 1px solid #8b5cf6;" id="badgeReasoningState">AI Reasoner Active</span>
-                <span style="font-size:0.75rem; color:var(--text-muted);">Spatio-Temporal Backwards Tracing &amp; Signal Dynamics</span>
-            </div>
-        </div>
-        <div class="card-body" style="padding: 1.25rem;">
-            
-            <!-- AI Causal Diagnostics Report Narrative -->
-            <div style="background: rgba(10, 14, 26, 0.7); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.25rem; font-size: 0.85rem; line-height: 1.6;" id="reasoningNarrativeBox">
-                <div style="color: var(--text-muted); text-align: center; padding: 1rem;">Process a video to run deep space-time causal reasoning...</div>
-            </div>
-
-            <!-- 5 Network Reasoning Metric Cards Grid -->
-            <div class="macro-grid-4" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
-                
-                <!-- 1. Congestion Origination -->
-                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; padding: 1rem;">
-                    <div style="font-size: 0.75rem; color: #f87171; font-weight: 600; text-transform: uppercase;">⏱️ Congestion Origination</div>
-                    <div style="font-size: 1.2rem; font-weight: 700; color: #fca5a5; margin: 0.3rem 0;" id="reasonJamOrigin">--</div>
-                    <div style="font-size: 0.72rem; color: var(--text-secondary);" id="reasonJamDetails">Traceback: Space &amp; Time</div>
-                </div>
-
-                <!-- 2. Signal Performance -->
-                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(59,130,246,0.25); border-radius: 8px; padding: 1rem;">
-                    <div style="font-size: 0.75rem; color: #60a5fa; font-weight: 600; text-transform: uppercase;">🚦 Saturation Flow &amp; Headway</div>
-                    <div style="font-size: 1.2rem; font-weight: 700; color: #93c5fd; margin: 0.3rem 0;" id="reasonSatFlow">--</div>
-                    <div style="font-size: 0.72rem; color: var(--text-secondary);" id="reasonSignalDetails">Green Util: -- | Cycle Fail: --</div>
-                </div>
-
-                <!-- 3. Weaving & Conflict Hotspots -->
-                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(245,158,11,0.25); border-radius: 8px; padding: 1rem;">
-                    <div style="font-size: 0.75rem; color: #fbbf24; font-weight: 600; text-transform: uppercase;">🔀 Weaving &amp; Near-Misses</div>
-                    <div style="font-size: 1.2rem; font-weight: 700; color: #fde047; margin: 0.3rem 0;" id="reasonWeavingRate">--</div>
-                    <div style="font-size: 0.72rem; color: var(--text-secondary);" id="reasonConflictDetails">Conflicts: -- (PET &lt; 1.5s)</div>
-                </div>
-
-                <!-- 4. Desire-Line Mismatch -->
-                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(168,85,247,0.25); border-radius: 8px; padding: 1rem;">
-                    <div style="font-size: 0.75rem; color: #c084fc; font-weight: 600; text-transform: uppercase;">🛣️ Desire-Line Mismatch</div>
-                    <div style="font-size: 1.2rem; font-weight: 700; color: #e9d5ff; margin: 0.3rem 0;" id="reasonDesireMismatch">--</div>
-                    <div style="font-size: 0.72rem; color: var(--text-secondary);" id="reasonDesireDetails">Corner Cutting &amp; Straddling</div>
-                </div>
-
-                <!-- 5. Obstruction Census -->
-                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(236,72,153,0.25); border-radius: 8px; padding: 1rem;">
-                    <div style="font-size: 0.75rem; color: #f472b6; font-weight: 600; text-transform: uppercase;">🛑 Obstruction Census</div>
-                    <div style="font-size: 1.2rem; font-weight: 700; color: #fbcfe8; margin: 0.3rem 0;" id="reasonObstructions">--</div>
-                    <div style="font-size: 0.72rem; color: var(--text-secondary);" id="reasonObstructionDetails">Double Parked Dwell: --</div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- Bottom: Object-Level Kinematics Detail Table -->
-    <div class="kinematics-section">
-        <div class="table-toolbar">
             <div>
-                <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary);">⚡ Per-Object Kinematic Telemetry & Classification</h3>
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Real-time velocity, acceleration vector, heading angle, and fine-grained vehicle types in real metric units.</p>
+                <div class="hud-logo-title">AERIX <span>v1.0</span></div>
+                <div class="hud-logo-sub">Autonomous Aerial Traffic Intelligence &amp; Network Reasoning</div>
             </div>
-            <input type="text" id="trackSearch" class="search-input" placeholder="🔍 Search Track ID or Class (e.g. sedan, hgv)...">
         </div>
-        <div class="table-responsive">
-            <table class="kin-table">
-                <thead>
-                    <tr>
-                        <th>Track ID</th>
-                        <th>Parent Class</th>
-                        <th>Fine-Grained Class</th>
-                        <th>Velocity (km/h)</th>
-                        <th>Velocity (m/s)</th>
-                        <th>Acceleration (m/s²)</th>
-                        <th>Heading & Dir</th>
-                        <th>Distance (m)</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="kinematicsTableBody">
-                    <tr>
-                        <td colspan="9" style="text-align:center; color: var(--text-muted); padding: 2rem;">No tracked objects loaded yet.</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="hud-header-meta">
+            <div class="hud-status-badge">
+                <div class="hud-radar-dot" id="statusDot"></div>
+                <span id="statusText">CONNECTING TO GROUND STATION...</span>
+            </div>
         </div>
-    </div>
+    </header>
 
-</main>
+    <!-- ── Main Tactical Canvas ───────────────────────────────────────── -->
+    <main class="hud-canvas">
 
-<script>
-const videoPlayer = document.getElementById('videoPlayer');
-const videoPlaceholder = document.getElementById('videoPlaceholder');
-const videoBadge = document.getElementById('videoBadge');
-const fileInput = document.getElementById('fileInput');
-const processBtn = document.getElementById('processBtn');
-const reprocessBtn = document.getElementById('reprocessBtn');
-const processingStatus = document.getElementById('processingStatus');
-const progressBar = document.getElementById('progressBar');
-const processingText = document.getElementById('processingText');
-const processingPct = document.getElementById('processingPct');
-const statusDot = document.getElementById('statusDot');
-const statusText = document.getElementById('statusText');
-const trackSearch = document.getElementById('trackSearch');
+        <!-- ── Top Grid: Aerial Optical Feed + Macroscopic Flow Radar ────── -->
+        <section class="grid-hero">
 
-const liveStreamImg = document.getElementById('liveStreamImg');
-let currentTracks = [];
-let uploadedPath = '';
-let frameStreamTimer = null;
-
-// ── Load results ─────────────────────────────────
-async function loadResults() {
-    try {
-        const resp = await fetch('/api/results');
-        const data = await resp.json();
-        if (data.status === 'completed') {
-            displayResults(data);
-            statusDot.style.background = 'var(--success)';
-            statusText.textContent = 'AERIX Active — Macroscopic & Object Intelligence Ready';
-        } else {
-            statusDot.style.background = 'var(--warning)';
-            statusText.textContent = 'Ready — Upload video to run Traffic Analytics';
-        }
-    } catch (e) {
-        statusDot.style.background = 'var(--warning)';
-        statusText.textContent = 'Ready — Upload video';
-    }
-}
-
-function displayResults(data) {
-    const kin = data.kinematics_summary || {};
-    const macro = data.macroscopic_analytics || {};
-
-    // 1. Macroscopic Density & Flow Card
-    const flow = macro.macroscopic_flow || {};
-    document.getElementById('statDensity').textContent = (flow.density_vehicles_per_km || 0).toFixed(1);
-    document.getElementById('statOccupancy').textContent = (flow.road_area_occupancy_pct || 0).toFixed(1) + '%';
-    document.getElementById('statFlowRate').textContent = (flow.hourly_flow_rate_veh_hour || 0).toFixed(0);
-    document.getElementById('statAvgSpeed').textContent = (flow.average_speed_kmh || kin.average_speed_kmh || 0).toFixed(1);
-
-    if (flow.level_of_service) {
-        const losShort = flow.level_of_service.split('—')[0].trim();
-        const losBadge = document.getElementById('badgeLOS');
-        losBadge.textContent = losShort;
-        if (losShort.includes('A') || losShort.includes('B')) losBadge.className = 'badge badge-success';
-        else if (losShort.includes('C') || losShort.includes('D')) losBadge.className = 'badge badge-warning';
-        else losBadge.className = 'badge badge-danger';
-    }
-    if (flow.mfd_congestion_state) {
-        document.getElementById('mfdState').textContent = flow.mfd_congestion_state;
-    }
-
-    // 2. Fine-Grained Class Breakdown
-    const fineCounts = data.fine_grained_class_counts || data.class_counts || {};
-    const fineDiv = document.getElementById('fineClassDistribution');
-    const totalTracks = Object.values(fineCounts).reduce((a, b) => a + b, 0);
-
-    if (totalTracks > 0) {
-        fineDiv.innerHTML = Object.entries(fineCounts)
-            .sort((a, b) => b[1] - a[1])
-            .map(([cls, count]) => `
-                <div class="class-row">
-                    <div class="class-info">
-                        <div class="class-dot dot-${cls}"></div>
-                        <span class="class-name">${cls.replace('_', ' ')}</span>
+            <!-- 1. Video Telemetry Console -->
+            <div class="hud-card">
+                <div class="hud-card-header">
+                    <div class="hud-card-title">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="2" y="2" width="20" height="20" rx="0"></rect>
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <line x1="12" y1="2" x2="12" y2="6"></line>
+                            <line x1="12" y1="18" x2="12" y2="22"></line>
+                        </svg>
+                        Aerial Optical Sensor // YOLOv8 &amp; ByteTrack Telemetry
                     </div>
-                    <span class="class-count">${count}</span>
+                    <span class="badge-hud" id="videoBadge">STANDBY</span>
                 </div>
-            `).join('');
-    }
-
-    // 3. Turning Movements Card
-    const turns = macro.turning_movements || {};
-    document.getElementById('totalMovements').textContent = (turns.total_movements_analyzed || 0) + ' Trips';
-    const turnCounts = turns.movement_counts || {};
-    const turnProps = turns.movement_proportions_pct || {};
-    const turningDiv = document.getElementById('turningMovementsBody');
-
-    if (Object.keys(turnCounts).length > 0) {
-        turningDiv.innerHTML = Object.entries(turnCounts).map(([mName, mCount]) => {
-            const pct = turnProps[mName] || 0;
-            return `
-                <div style="margin-bottom: 0.6rem;">
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
-                        <span style="font-weight:500;">${mName}</span>
-                        <span style="color:var(--cyan); font-weight:600;">${mCount} (${pct}%)</span>
+                
+                <div class="video-viewport-frame">
+                    <div class="reticle-overlay">
+                        <div class="reticle-crosshair"></div>
+                        <div class="reticle-corner-tl"></div>
+                        <div class="reticle-corner-tr"></div>
+                        <div class="reticle-corner-bl"></div>
+                        <div class="reticle-corner-br"></div>
+                        <div class="reticle-telemetry-stamp" id="videoOverlayStamp">SYS: NADIR CAM 4K // FPS: 30.0 // FOV: 84°</div>
                     </div>
-                    <div class="bar-container">
-                        <div class="bar-fill" style="width: ${pct}%;"></div>
+
+                    <video id="videoPlayer" controls autoplay loop muted playsinline></video>
+                    <img id="liveStreamImg" class="hidden" alt="Live Tracking Stream">
+                    
+                    <div class="video-placeholder-tactical" id="videoPlaceholder">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                        <div style="font-family: var(--font-tactical); letter-spacing:0.12em; text-transform:uppercase; color: #a1a1aa;">
+                            AWAITING DRONE FLIGHT RECORDING INGESTION
+                        </div>
                     </div>
                 </div>
-            `;
-        }).join('');
-    }
 
-    // 4. Queue Lengths & Delays
-    const q = macro.queue_analytics || {};
-    document.getElementById('statQueueLength').textContent = (q.max_queue_length_meters || 0).toFixed(1) + ' m';
-    document.getElementById('statQueuedVehicles').textContent = q.total_queued_vehicles || 0;
-    document.getElementById('statQueueDelay').textContent = (q.average_delay_seconds || 0).toFixed(1) + 's';
+                <div class="video-controls-bar">
+                    <label class="btn-hud btn-hud-primary" id="uploadBtn">
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Ingest Flight Video
+                        <input type="file" accept="video/*" id="fileInput" style="display:none">
+                    </label>
 
-    const qBadge = document.getElementById('queueBadge');
-    if (q.queuing_status) {
-        qBadge.textContent = q.queuing_status.split('/')[0].trim();
-        if (q.queuing_status.includes('Severe')) qBadge.className = 'badge badge-danger';
-        else if (q.queuing_status.includes('Moderate') || q.queuing_status.includes('Light')) qBadge.className = 'badge badge-warning';
-        else qBadge.className = 'badge badge-success';
-    }
+                    <button class="btn-hud" id="processBtn" disabled>
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        Execute Full Pipeline
+                    </button>
 
-    // 5. Segment Speed Profiles
-    const sp = macro.speed_profiles || {};
-    const profiles = sp.segment_profiles || [];
-    const spDiv = document.getElementById('speedProfilesBody');
-
-    if (profiles.length > 0) {
-        spDiv.innerHTML = profiles.map(p => `
-            <div style="margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:600;">
-                    <span>${p.segment_name}</span>
-                    <span style="color:${p.speeding_percentage > 20 ? 'var(--danger)' : '#38bdf8'};">${p.mean_speed_kmh} km/h (P85: ${p.p85_speed_kmh})</span>
+                    <button class="btn-hud" id="reprocessBtn" disabled>
+                        <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                        Re-Process
+                    </button>
                 </div>
-                <div class="bar-container">
-                    <div class="bar-fill ${p.speeding_percentage > 20 ? 'bar-fill-danger' : ''}" style="width: ${Math.min(100, (p.p85_speed_kmh / 80) * 100)}%;"></div>
+
+                <div id="processingStatus" class="hidden" style="padding: 0 1.4rem 1.25rem; background: #ffffff;">
+                    <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:0.78rem; color:var(--text-body); margin-bottom:0.4rem;">
+                        <span id="processingText">PROCESSING FLIGHT STREAM...</span>
+                        <span id="processingPct">0%</span>
+                    </div>
+                    <div class="hud-bar-track">
+                        <div class="hud-bar-fill" id="progressBar" style="width: 0%;"></div>
+                    </div>
                 </div>
             </div>
-        `).join('');
-    }
 
-    // 6. Lane Volume & Modal Split
-    const laneData = macro.lane_analytics || {};
-    document.getElementById('laneTotalVolume').textContent = `Total: ${laneData.total_roadway_volume || 0} veh`;
-    const lanes = laneData.lanes || [];
-    const laneDiv = document.getElementById('laneModalBody');
-
-    if (lanes.length > 0) {
-        laneDiv.innerHTML = lanes.map(l => {
-            const modalStrs = Object.entries(l.modal_split_pct || {})
-                .map(([cls, pct]) => `${cls}: ${pct}%`)
-                .join(' • ');
-
-            return `
-                <div style="margin-bottom: 0.85rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600;">
-                        <span>${l.lane_name}</span>
-                        <span style="color:var(--cyan);">${l.volume} veh (${l.volume_share_pct}%) | Avg: ${l.average_speed_kmh} km/h</span>
+            <!-- 2. Macroscopic Flow & Density Core -->
+            <div style="display:flex; flex-direction:column; gap:2rem;">
+                
+                <!-- Density / Flow Card -->
+                <div class="hud-card">
+                    <div class="hud-card-header">
+                        <div class="hud-card-title">
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                            Macroscopic Flow &amp; Density
+                        </div>
+                        <span class="badge-hud badge-hud-stark" id="badgeLOS">LOS —</span>
                     </div>
-                    <div class="bar-container">
-                        <div class="bar-fill" style="width: ${l.volume_share_pct}%;"></div>
+                    <div class="hud-card-body">
+                        <div class="metric-unit-grid">
+                            <div class="metric-cell">
+                                <div class="metric-value" id="statDensity">—</div>
+                                <div class="metric-label">Density (veh/km)</div>
+                            </div>
+                            <div class="metric-cell">
+                                <div class="metric-value" id="statOccupancy">—</div>
+                                <div class="metric-label">Area Occupancy %</div>
+                            </div>
+                            <div class="metric-cell">
+                                <div class="metric-value" id="statFlowRate">—</div>
+                                <div class="metric-label">Flow Rate (veh/h)</div>
+                            </div>
+                            <div class="metric-cell">
+                                <div class="metric-value" id="statAvgSpeed">—</div>
+                                <div class="metric-label">Space Mean Speed</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1.15rem; padding: 1rem; background: var(--bg-subtle); border: 1px solid var(--border-light);">
+                            <div style="font-family: var(--font-tactical); font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700;">
+                                MFD Congestion Equilibrium
+                            </div>
+                            <div style="font-family: var(--font-display); font-size: 0.98rem; font-weight: 700; color: var(--text-heading); margin-top: 4px;" id="mfdState">
+                                STANDBY FOR SENSOR STREAM
+                            </div>
+                        </div>
                     </div>
-                    <div style="font-size: 0.72rem; color: var(--text-muted);">Modal Split: ${modalStrs || 'None'}</div>
                 </div>
-            `;
-        }).join('');
-    }
 
-    // 7. Origin-Destination Corridors
-    const od = macro.origin_destination_matrix || {};
-    const corridors = od.major_corridors || [];
-    const odDiv = document.getElementById('odMatrixBody');
-
-    if (corridors.length > 0) {
-        odDiv.innerHTML = corridors.slice(0, 5).map(c => `
-            <div style="margin-bottom: 0.65rem;">
-                <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
-                    <span>${c.origin.replace(' Approach', '')} &rarr; ${c.destination.replace(' Approach', '')}</span>
-                    <span style="color:#a78bfa; font-weight:600;">${c.volume} trips (${c.proportion_pct}%)</span>
+                <!-- Fine-Grained Classification Radar -->
+                <div class="hud-card">
+                    <div class="hud-card-header">
+                        <div class="hud-card-title">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg>
+                            Fine-Grained Classification
+                        </div>
+                        <span class="badge-hud">LEVEL 2 MODAL</span>
+                    </div>
+                    <div class="hud-card-body" id="fineClassDistribution">
+                        <div style="color: var(--text-muted); font-size: 0.82rem; font-family: var(--font-mono); text-align: center; padding: 1.5rem 0;">
+                            AWAITING TARGET DISCRIMINATION
+                        </div>
+                    </div>
                 </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="background:linear-gradient(90deg, #8b5cf6, #ec4899); width: ${c.proportion_pct}%;"></div>
+
+            </div>
+
+        </section>
+
+        <!-- ── Middle Grid: 3-Column Aggregate Spatial Intelligence ──────── -->
+        <section class="grid-3col">
+
+            <!-- 1. Turning Movements & Directional Counts -->
+            <div class="hud-card">
+                <div class="hud-card-header">
+                    <div class="hud-card-title">
+                        <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                        Turning Movements
+                    </div>
+                    <span class="badge-hud" id="totalMovements">0 TRIPS</span>
+                </div>
+                <div class="hud-card-body" id="turningMovementsBody">
+                    <div style="color: var(--text-muted); font-size: 0.82rem; font-family: var(--font-mono); padding: 1.25rem 0; text-align: center;">
+                        NO INTERSECTION TRAVERSAL DATA
+                    </div>
                 </div>
             </div>
-        `).join('');
-    }
 
-    // 8. Populate Kinematics Table, Map-Native Grounding, Flow Diagram & Network Reasoning
-    currentTracks = data.tracks || [];
-    renderKinematicsTable(currentTracks);
+            <!-- 2. Queue Length & Delay Estimation -->
+            <div class="hud-card">
+                <div class="hud-card-header">
+                    <div class="hud-card-title">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        Queue Length &amp; Standstill Delay
+                    </div>
+                    <span class="badge-hud" id="queueBadge">FREE FLOW</span>
+                </div>
+                <div class="hud-card-body">
+                    <div class="metric-unit-grid" style="margin-bottom: 1.15rem;">
+                        <div class="metric-cell metric-cell-danger">
+                            <div class="metric-value" id="statQueueLength">0.0 m</div>
+                            <div class="metric-label">Max Queue Length</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value" id="statQueuedVehicles">0</div>
+                            <div class="metric-label">Queued Units</div>
+                        </div>
+                    </div>
+                    <div class="config-row-hud"><span class="config-key-hud">Mean Dwell Delay</span><span class="config-val-hud" id="statQueueDelay">0.0s</span></div>
+                    <div class="config-row-hud"><span class="config-key-hud">Standstill Threshold</span><span class="config-val-hud">&le; 6.0 km/h</span></div>
+                    <div class="config-row-hud"><span class="config-key-hud">Persistence Window</span><span class="config-val-hud">&ge; 1.5s standstill</span></div>
+                </div>
+            </div>
 
-    if (data.spatial_grounding) {
-        renderSpatialMap(data.spatial_grounding, currentTracks);
-    }
+            <!-- 3. Speed Profiles & Speeding Hotspots -->
+            <div class="hud-card">
+                <div class="hud-card-header">
+                    <div class="hud-card-title">
+                        <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+                        Segment Speed Profiles
+                    </div>
+                    <span class="badge-hud badge-hud-warning" id="speedLimitTag">LIMIT: 50 KM/H</span>
+                </div>
+                <div class="hud-card-body" id="speedProfilesBody">
+                    <div style="color: var(--text-muted); font-size: 0.82rem; font-family: var(--font-mono); padding: 1.25rem 0; text-align: center;">
+                        NO SPEED SEGMENT DATA
+                    </div>
+                </div>
+            </div>
 
-    renderDirectionFlowDiagram(data);
+        </section>
 
-    if (data.network_reasoning) {
-        renderNetworkReasoning(data.network_reasoning);
-    }
+        <!-- ── Middle 2: Lane Modal Split & Origin-Destination Distributions ── -->
+        <section class="grid-2col">
 
-    // Video — only update when final result has video URL
-    if (data.output_video_url) {
-        if (frameStreamTimer) {
-            clearInterval(frameStreamTimer);
-            frameStreamTimer = null;
+            <!-- Lane Volume & Modal Split -->
+            <div class="hud-card">
+                <div class="hud-card-header">
+                    <div class="hud-card-title">
+                        <svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="3"></line></svg>
+                        Lane Volume &amp; Modal Split
+                    </div>
+                    <span class="badge-hud" id="laneTotalVolume">TOTAL: 0 VEH</span>
+                </div>
+                <div class="hud-card-body" id="laneModalBody">
+                    <div style="color: var(--text-muted); font-size: 0.82rem; font-family: var(--font-mono); padding: 1.25rem 0; text-align: center;">
+                        NO LANE PARTITION TELEMETRY
+                    </div>
+                </div>
+            </div>
+
+            <!-- Origin-Destination Distributions -->
+            <div class="hud-card">
+                <div class="hud-card-header">
+                    <div class="hud-card-title">
+                        <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="18" r="3"></circle><line x1="8.59" y1="8.59" x2="15.42" y2="15.42"></line></svg>
+                        Origin–Destination Corridors (O-D)
+                    </div>
+                    <span class="badge-hud">DESIRE LINES</span>
+                </div>
+                <div class="hud-card-body" id="odMatrixBody">
+                    <div style="color: var(--text-muted); font-size: 0.82rem; font-family: var(--font-mono); padding: 1.25rem 0; text-align: center;">
+                        NO CORRIDOR OD RECORDS
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ── Spatial Grounding & WGS84 Geographic Binding ────────────────── -->
+        <section class="hud-card">
+            <div class="hud-card-header">
+                <div class="hud-card-title">
+                    <svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+                    Map-Native Spatial Grounding // Flat-Earth Homography &amp; OSM Road Alignment
+                </div>
+                <div style="display:flex; align-items:center; gap:1.25rem;">
+                    <span class="badge-hud badge-hud-success">WGS84 GROUNDED</span>
+                    <span style="font-family:var(--font-mono); font-size:0.76rem; color:var(--text-body); font-weight:600;" id="telemetrySummaryTag">
+                        UAV GPS: 18.5590°, 73.7868° | ALT: 85M | GIMBAL: -90°
+                    </span>
+                </div>
+            </div>
+            <div class="hud-card-body" style="padding: 0;">
+                <div id="spatialMap"></div>
+            </div>
+        </section>
+
+        <!-- ── Traffic Direction Flow Diagram Blueprint ────────────────────── -->
+        <section class="hud-card">
+            <div class="hud-card-header">
+                <div class="hud-card-title">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                    Directional Flow Blueprint // Geometric Intersection Routing
+                </div>
+                <div style="display:flex; align-items:center; gap:1.25rem;">
+                    <span class="badge-hud badge-hud-stark" id="badgeFlowDiagram">LIVE VECTORS</span>
+                    <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted);" id="flowDiagramSummary">
+                        Approach routing &amp; conflict turn volumes
+                    </span>
+                </div>
+            </div>
+            <div class="hud-card-body" style="padding: 0;">
+                <div class="flow-blueprint-box" id="flowDiagramContainer">
+                    <svg id="flowDiagramSVG" viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg">
+                        <text x="480" y="300" text-anchor="middle" fill="#94a3b8" font-size="13" font-family="'Orbitron', sans-serif">
+                            INGEST FLIGHT STREAM TO RECONSTRUCT INTERSECTION VECTORS
+                        </text>
+                    </svg>
+                </div>
+                <div class="flow-blueprint-legend">
+                    <div class="flow-legend-chip"><div class="flow-chip-line" style="background:#09090b;"></div> Through Movement</div>
+                    <div class="flow-legend-chip"><div class="flow-chip-line" style="background:#475569;"></div> Left Turn Arc</div>
+                    <div class="flow-legend-chip"><div class="flow-chip-line" style="background:#64748b;"></div> Right Turn Arc</div>
+                    <div class="flow-legend-chip"><div class="flow-chip-line" style="background:#d97706;"></div> U-Turn Loop</div>
+                    <div class="flow-legend-chip"><div class="flow-chip-line" style="background:#dc2626;"></div> Queue Extent Ribbon</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Spatial-Temporal Network Reasoning Engine ──────────────────── -->
+        <section class="hud-card">
+            <div class="hud-card-header">
+                <div class="hud-card-title">
+                    <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 1 10 10c0 5.5-4.5 10-10 10S2 17.5 2 12A10 10 0 0 1 12 2z"></path><path d="M12 6v6l4 2"></path></svg>
+                    Network Reasoning Engine // Backward Shockwave Causal Graph
+                </div>
+                <div style="display:flex; align-items:center; gap:1.25rem;">
+                    <span class="badge-hud badge-hud-stark" id="badgeReasoningState">AI REASONER ACTIVE</span>
+                    <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted);">
+                        Spatio-Temporal Backwards Tracing &amp; Bottleneck Diagnostics
+                    </span>
+                </div>
+            </div>
+            <div class="hud-card-body">
+                
+                <!-- Causal Narrative (Roboto & Orbitron) -->
+                <div class="causal-console-box" id="reasoningNarrativeBox" style="margin-bottom: 1.6rem;">
+                    <div style="color: var(--text-muted); text-align: center; font-family: var(--font-mono);">
+                        PROCESS FLIGHT VIDEO TO RUN SPATIAL-TEMPORAL CAUSAL DECOMPOSITION
+                    </div>
+                </div>
+
+                <!-- 5 Reasoning Metric Pillars -->
+                <div class="grid-5col">
+                    
+                    <div class="metric-cell">
+                        <div class="metric-label" style="color:var(--alert-danger);">⏱️ Jam Origination</div>
+                        <div class="metric-value" style="font-size:1.45rem; margin:0.35rem 0;" id="reasonJamOrigin">--</div>
+                        <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-body);" id="reasonJamDetails">Traceback Space &amp; Time</div>
+                    </div>
+
+                    <div class="metric-cell">
+                        <div class="metric-label" style="color:var(--text-heading);">🚦 Saturation Flow</div>
+                        <div class="metric-value" style="font-size:1.45rem; margin:0.35rem 0;" id="reasonSatFlow">--</div>
+                        <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-body);" id="reasonSignalDetails">Cycle Loss &amp; Green Util</div>
+                    </div>
+
+                    <div class="metric-cell">
+                        <div class="metric-label" style="color:var(--alert-warning);">🔀 Weaving &amp; Near-Misses</div>
+                        <div class="metric-value" style="font-size:1.45rem; margin:0.35rem 0;" id="reasonWeavingRate">--</div>
+                        <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-body);" id="reasonConflictDetails">Conflicts (PET &lt; 1.5s)</div>
+                    </div>
+
+                    <div class="metric-cell">
+                        <div class="metric-label" style="color:var(--text-secondary);">🛣️ Desire Mismatch</div>
+                        <div class="metric-value" style="font-size:1.45rem; margin:0.35rem 0;" id="reasonDesireMismatch">--</div>
+                        <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-body);" id="reasonDesireDetails">Straddling &amp; Corner Cuts</div>
+                    </div>
+
+                    <div class="metric-cell">
+                        <div class="metric-label" style="color:var(--alert-danger);">🛑 Obstruction Census</div>
+                        <div class="metric-value" style="font-size:1.45rem; margin:0.35rem 0;" id="reasonObstructions">--</div>
+                        <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-body);" id="reasonObstructionDetails">Dwell Duration &amp; Capacity Drop</div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Per-Object Kinematic Telemetry Table ────────────────────────── -->
+        <section class="hud-card">
+            <div class="table-toolbar-hud">
+                <div>
+                    <div class="hud-card-title">
+                        <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        Per-Object Kinematic Telemetry &amp; Ground Metric Vectors
+                    </div>
+                    <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-muted); margin-top:3px;">
+                        Calibrated real-world velocity (km/h), acceleration (m/s²), heading azimuth, and sub-type classes.
+                    </div>
+                </div>
+                <input type="text" id="trackSearch" class="hud-search-input" placeholder="Search track ID or vehicle type (e.g. sedan, hgv)...">
+            </div>
+
+            <div class="table-responsive-hud">
+                <table class="hud-table">
+                    <thead>
+                        <tr>
+                            <th>Track ID</th>
+                            <th>Parent Class</th>
+                            <th>Fine-Grained Classification</th>
+                            <th>Velocity (km/h)</th>
+                            <th>Velocity (m/s)</th>
+                            <th>Acceleration (m/s²)</th>
+                            <th>Heading &amp; Azimuth</th>
+                            <th>Displacement (m)</th>
+                            <th>State</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kinematicsTableBody">
+                        <tr>
+                            <td colspan="9" style="text-align:center; color: var(--text-muted); padding: 2.5rem; font-family:var(--font-mono);">
+                                AWAITING TARGET TRACKING TELEMETRY...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ── JavaScript Integration & Real-Time Controller ────────────────── -->
+    <script>
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoPlaceholder = document.getElementById('videoPlaceholder');
+        const videoBadge = document.getElementById('videoBadge');
+        const fileInput = document.getElementById('fileInput');
+        const processBtn = document.getElementById('processBtn');
+        const reprocessBtn = document.getElementById('reprocessBtn');
+        const processingStatus = document.getElementById('processingStatus');
+        const progressBar = document.getElementById('progressBar');
+        const processingText = document.getElementById('processingText');
+        const processingPct = document.getElementById('processingPct');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const trackSearch = document.getElementById('trackSearch');
+        const liveStreamImg = document.getElementById('liveStreamImg');
+
+        let currentTracks = [];
+        let uploadedPath = '';
+        let frameStreamTimer = null;
+
+        // ── Load Results From Backend ───────────────────────────────────────
+        async function loadResults() {
+            try {
+                const resp = await fetch('/api/results');
+                const data = await resp.json();
+                if (data.status === 'completed') {
+                    displayResults(data);
+                    statusDot.style.background = 'var(--alert-success)';
+                    statusText.textContent = 'AERIX ACTIVE // FULL SYSTEM READY';
+                } else {
+                    statusDot.style.background = 'var(--alert-warning)';
+                    statusText.textContent = 'SYSTEM STANDBY // READY FOR VIDEO INGESTION';
+                }
+            } catch (e) {
+                statusDot.style.background = 'var(--alert-warning)';
+                statusText.textContent = 'SYSTEM STANDBY // INGEST FLIGHT RECORDING';
+            }
         }
-        liveStreamImg.classList.add('hidden');
-        videoPlayer.classList.remove('hidden');
-        videoPlayer.src = data.output_video_url;
-        videoPlaceholder.classList.add('hidden');
-        videoBadge.textContent = 'Processed';
-        videoBadge.className = 'badge badge-success';
-        reprocessBtn.disabled = false;
-    }
-}
 
-// ── Leaflet Spatial Map Engine ─────────────────────
-let leafletMap = null;
-let mapLayers = {
-    roadNetwork: null,
-    desireLines: null,
-    queueExtents: null,
-    vehicleMarkers: null,
-};
+        // ── Render All Visual Telemetry ─────────────────────────────────────
+        function displayResults(data) {
+            const kin = data.kinematics_summary || {};
+            const macro = data.macroscopic_analytics || {};
 
-function initLeafletMap(centerLat, centerLon) {
-    if (leafletMap) return;
-    const mapDiv = document.getElementById('spatialMap');
-    if (!mapDiv) return;
+            // 1. Macroscopic Flow & Density
+            const flow = macro.macroscopic_flow || {};
+            document.getElementById('statDensity').textContent = (flow.density_vehicles_per_km || 0).toFixed(1);
+            document.getElementById('statOccupancy').textContent = (flow.road_area_occupancy_pct || 0).toFixed(1) + '%';
+            document.getElementById('statFlowRate').textContent = (flow.hourly_flow_rate_veh_hour || 0).toFixed(0);
+            document.getElementById('statAvgSpeed').textContent = (flow.average_speed_kmh || kin.average_speed_kmh || 0).toFixed(1) + ' km/h';
 
-    leafletMap = L.map('spatialMap', { zoomControl: true }).setView([centerLat || 37.774929, centerLon || -122.419416], 18);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 20,
-        subdomains: 'abcd',
-        attribution: '&copy; OpenStreetMap &copy; CARTO'
-    }).addTo(leafletMap);
-
-    mapLayers.roadNetwork = L.layerGroup().addTo(leafletMap);
-    mapLayers.desireLines = L.layerGroup().addTo(leafletMap);
-    mapLayers.queueExtents = L.layerGroup().addTo(leafletMap);
-    mapLayers.vehicleMarkers = L.layerGroup().addTo(leafletMap);
-}
-
-function renderSpatialMap(spatial, tracks) {
-    const center = spatial.intersection_center || {};
-    const lat = center.latitude || 37.774929;
-    const lon = center.longitude || -122.419416;
-
-    initLeafletMap(lat, lon);
-    if (!leafletMap) return;
-
-    leafletMap.setView([lat, lon], 18);
-
-    // Update Telemetry Header
-    const flight = spatial.flight_telemetry || {};
-    document.getElementById('telemetrySummaryTag').textContent = 
-        `Drone GPS: ${(flight.center_latitude || lat).toFixed(4)}°, ${(flight.center_longitude || lon).toFixed(4)}° | Alt: ${flight.mean_altitude_meters || 85}m | Pitch: ${flight.mean_gimbal_pitch_deg || -90}°`;
-
-    // 1. Render Road Network & Lane Polygons
-    mapLayers.roadNetwork.clearLayers();
-    if (spatial.per_lane_metrics_geojson) {
-        L.geoJSON(spatial.per_lane_metrics_geojson, {
-            style: (feature) => {
-                const props = feature.properties || {};
-                const type = props.lane_type || 'through';
-                const vol = props.traffic_volume || 0;
-
-                let fillColor = '#3b82f6';
-                if (type === 'left_turn') fillColor = '#8b5cf6';
-                else if (vol > 15) fillColor = '#ef4444';
-                else if (vol > 5) fillColor = '#f59e0b';
-
-                return {
-                    color: fillColor,
-                    weight: 2,
-                    opacity: 0.8,
-                    fillColor: fillColor,
-                    fillOpacity: 0.25,
-                };
-            },
-            onEachFeature: (feature, layer) => {
-                const p = feature.properties || {};
-                layer.bindPopup(`
-                    <div style="color:#000; font-family:sans-serif; font-size:12px;">
-                        <b>Lane: ${p.lane_id}</b><br/>
-                        Link: ${p.link_id} (${p.approach})<br/>
-                        Volume: ${p.traffic_volume || 0} vehicles<br/>
-                        Avg Speed: ${p.average_speed_kmh || 50} km/h<br/>
-                        Speed Limit: ${p.speed_limit_kmh} km/h
-                    </div>
-                `);
+            if (flow.level_of_service) {
+                const losShort = flow.level_of_service.split('—')[0].trim();
+                const losBadge = document.getElementById('badgeLOS');
+                losBadge.textContent = losShort;
+                if (losShort.includes('A') || losShort.includes('B')) {
+                    losBadge.className = 'badge-hud badge-hud-success';
+                } else if (losShort.includes('C') || losShort.includes('D')) {
+                    losBadge.className = 'badge-hud badge-hud-warning';
+                } else {
+                    losBadge.className = 'badge-hud badge-hud-danger';
+                }
             }
-        }).addTo(mapLayers.roadNetwork);
-    }
-
-    // 2. Render Desire Lines
-    mapLayers.desireLines.clearLayers();
-    if (spatial.desire_lines_geojson) {
-        L.geoJSON(spatial.desire_lines_geojson, {
-            style: (feature) => {
-                const p = feature.properties || {};
-                return {
-                    color: p.color || '#8b5cf6',
-                    weight: p.stroke_width || 3,
-                    opacity: 0.85,
-                    dashArray: '6, 6',
-                };
-            },
-            onEachFeature: (feature, layer) => {
-                const p = feature.properties || {};
-                layer.bindPopup(`
-                    <div style="color:#000; font-size:12px;">
-                        <b>Desire Line: ${p.origin} &rarr; ${p.destination}</b><br/>
-                        Volume: ${p.volume} trips (${p.proportion_pct}%)
-                    </div>
-                `);
+            if (flow.mfd_congestion_state) {
+                document.getElementById('mfdState').textContent = flow.mfd_congestion_state.toUpperCase();
             }
-        }).addTo(mapLayers.desireLines);
-    }
 
-    // 3. Render Queue Extents along Carriageway
-    mapLayers.queueExtents.clearLayers();
-    if (spatial.queue_extents_geojson) {
-        L.geoJSON(spatial.queue_extents_geojson, {
-            style: (feature) => {
-                const p = feature.properties || {};
-                return {
-                    color: p.color || '#ef4444',
-                    weight: 6,
-                    opacity: 0.9,
-                };
-            },
-            onEachFeature: (feature, layer) => {
-                const p = feature.properties || {};
-                layer.bindPopup(`
-                    <div style="color:#000; font-size:12px;">
-                        <b style="color:red;">🛑 Queue Extent: ${p.lane_id}</b><br/>
-                        Length: ${p.queue_length_meters} meters<br/>
-                        Queued Vehicles: ${p.queued_vehicles_count}
-                    </div>
-                `);
+            // 2. Fine-Grained Vehicle Classification
+            const fineCounts = data.fine_grained_class_counts || data.class_counts || {};
+            const fineDiv = document.getElementById('fineClassDistribution');
+            const totalTracks = Object.values(fineCounts).reduce((a, b) => a + b, 0);
+
+            if (totalTracks > 0) {
+                fineDiv.innerHTML = Object.entries(fineCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([cls, count]) => `
+                        <div class="class-row-hud">
+                            <div class="class-info-hud">
+                                <div class="class-marker"></div>
+                                <span class="class-name-hud">${cls.replace('_', ' ')}</span>
+                            </div>
+                            <span class="class-count-hud">${count}</span>
+                        </div>
+                    `).join('');
             }
-        }).addTo(mapLayers.queueExtents);
-    }
 
-    // 4. Render Vehicle Markers on Map
-    mapLayers.vehicleMarkers.clearLayers();
-    (tracks || []).forEach(t => {
-        const geo = t.geodetic_position || {};
-        if (geo.latitude && geo.longitude) {
-            const fg = t.fine_grained_class || t.class_label || 'vehicle';
-            const k = t.kinematics || {};
-            const spd = (k.current_speed_kmh !== undefined ? k.current_speed_kmh : (k.average_speed_kmh || 0)).toFixed(1);
+            // 3. Turning Movements
+            const turns = macro.turning_movements || {};
+            document.getElementById('totalMovements').textContent = (turns.total_movements_analyzed || 0) + ' TRIPS';
+            const turnCounts = turns.movement_counts || {};
+            const turnProps = turns.movement_proportions_pct || {};
+            const turningDiv = document.getElementById('turningMovementsBody');
 
-            const marker = L.circleMarker([geo.latitude, geo.longitude], {
-                radius: 6,
-                fillColor: fg.includes('hgv') || fg.includes('truck') ? '#ef4444' : (fg.includes('bus') ? '#f59e0b' : '#38bdf8'),
-                color: '#ffffff',
-                weight: 1.5,
-                opacity: 1,
-                fillOpacity: 0.9,
+            if (Object.keys(turnCounts).length > 0) {
+                turningDiv.innerHTML = Object.entries(turnCounts).map(([mName, mCount]) => {
+                    const pct = turnProps[mName] || 0;
+                    return `
+                        <div style="margin-bottom: 0.85rem;">
+                            <div style="display:flex; justify-content:space-between; font-family:var(--font-ui); font-size:0.84rem; font-weight:600;">
+                                <span>${mName}</span>
+                                <span style="font-family:var(--font-mono); color:var(--text-heading); font-weight:700;">${mCount} (${pct}%)</span>
+                            </div>
+                            <div class="hud-bar-track">
+                                <div class="hud-bar-fill" style="width: ${pct}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 4. Queue Analytics
+            const q = macro.queue_analytics || {};
+            document.getElementById('statQueueLength').textContent = (q.max_queue_length_meters || 0).toFixed(1) + ' m';
+            document.getElementById('statQueuedVehicles').textContent = q.total_queued_vehicles || 0;
+            document.getElementById('statQueueDelay').textContent = (q.average_delay_seconds || 0).toFixed(1) + 's';
+
+            const qBadge = document.getElementById('queueBadge');
+            if (q.queuing_status) {
+                qBadge.textContent = q.queuing_status.split('/')[0].trim().toUpperCase();
+                if (q.queuing_status.includes('Severe')) qBadge.className = 'badge-hud badge-hud-danger';
+                else if (q.queuing_status.includes('Moderate') || q.queuing_status.includes('Light')) qBadge.className = 'badge-hud badge-hud-warning';
+                else qBadge.className = 'badge-hud badge-hud-success';
+            }
+
+            // 5. Segment Speed Profiles
+            const sp = macro.speed_profiles || {};
+            const profiles = sp.segment_profiles || [];
+            const spDiv = document.getElementById('speedProfilesBody');
+
+            if (profiles.length > 0) {
+                spDiv.innerHTML = profiles.map(p => `
+                    <div style="margin-bottom: 0.95rem; padding-bottom: 0.45rem; border-bottom: 1px solid var(--border-subtle);">
+                        <div style="display:flex; justify-content:space-between; font-family:var(--font-ui); font-size:0.84rem; font-weight:600;">
+                            <span>${p.segment_name}</span>
+                            <span style="font-family:var(--font-mono); color:${p.speeding_percentage > 20 ? 'var(--alert-danger)' : 'var(--text-heading)'}; font-weight:700;">
+                                ${p.mean_speed_kmh} km/h (P85: ${p.p85_speed_kmh})
+                            </span>
+                        </div>
+                        <div class="hud-bar-track">
+                            <div class="hud-bar-fill ${p.speeding_percentage > 20 ? 'hud-bar-fill-danger' : ''}" style="width: ${Math.min(100, (p.p85_speed_kmh / 80) * 100)}%;"></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 6. Lane Analytics
+            const laneData = macro.lane_analytics || {};
+            document.getElementById('laneTotalVolume').textContent = `TOTAL: ${laneData.total_roadway_volume || 0} VEH`;
+            const lanes = laneData.lanes || [];
+            const laneDiv = document.getElementById('laneModalBody');
+
+            if (lanes.length > 0) {
+                laneDiv.innerHTML = lanes.map(l => {
+                    const modalStrs = Object.entries(l.modal_split_pct || {})
+                        .map(([cls, pct]) => `${cls}: ${pct}%`)
+                        .join(' // ');
+
+                    return `
+                        <div style="margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border-subtle);">
+                            <div style="display:flex; justify-content:space-between; font-family:var(--font-ui); font-size:0.86rem; font-weight:600;">
+                                <span>${l.lane_name}</span>
+                                <span style="font-family:var(--font-mono); color:var(--text-heading); font-weight:700;">${l.volume} veh (${l.volume_share_pct}%) | avg ${l.average_speed_kmh} km/h</span>
+                            </div>
+                            <div class="hud-bar-track">
+                                <div class="hud-bar-fill" style="width: ${l.volume_share_pct}%;"></div>
+                            </div>
+                            <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-muted);">${modalStrs || 'NONE'}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 7. Origin-Destination Corridors
+            const od = macro.origin_destination_matrix || {};
+            const corridors = od.major_corridors || [];
+            const odDiv = document.getElementById('odMatrixBody');
+
+            if (corridors.length > 0) {
+                odDiv.innerHTML = corridors.slice(0, 5).map(c => `
+                    <div style="margin-bottom: 0.95rem;">
+                        <div style="display:flex; justify-content:space-between; font-family:var(--font-ui); font-size:0.84rem; font-weight:600;">
+                            <span>${c.origin.replace(' Approach', '')} &rarr; ${c.destination.replace(' Approach', '')}</span>
+                            <span style="font-family:var(--font-mono); color:var(--text-heading); font-weight:700;">${c.volume} trips (${c.proportion_pct}%)</span>
+                        </div>
+                        <div class="hud-bar-track">
+                            <div class="hud-bar-fill" style="width: ${c.proportion_pct}%;"></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 8. Kinematics, Map, Flow Diagram & Reasoning
+            currentTracks = data.tracks || [];
+            renderKinematicsTable(currentTracks);
+
+            if (data.spatial_grounding) {
+                renderSpatialMap(data.spatial_grounding, currentTracks);
+            }
+
+            renderDirectionFlowDiagram(data);
+
+            if (data.network_reasoning) {
+                renderNetworkReasoning(data.network_reasoning);
+            }
+
+            if (data.output_video_url) {
+                if (frameStreamTimer) {
+                    clearInterval(frameStreamTimer);
+                    frameStreamTimer = null;
+                }
+                liveStreamImg.classList.add('hidden');
+                videoPlayer.classList.remove('hidden');
+                videoPlayer.src = data.output_video_url;
+                videoPlaceholder.classList.add('hidden');
+                videoBadge.textContent = 'PROCESSED';
+                videoBadge.className = 'badge-hud badge-hud-success';
+                reprocessBtn.disabled = false;
+            }
+        }
+
+        // ── Leaflet Pristine Light CartoDB Basemap Engine ────────────────────
+        let leafletMap = null;
+        let mapLayers = {
+            roadNetwork: null,
+            desireLines: null,
+            queueExtents: null,
+            vehicleMarkers: null,
+        };
+
+        function initLeafletMap(centerLat, centerLon) {
+            if (leafletMap) return;
+            const mapDiv = document.getElementById('spatialMap');
+            if (!mapDiv) return;
+
+            leafletMap = L.map('spatialMap', { zoomControl: true }).setView([centerLat || 18.5590, centerLon || 73.7868], 18);
+            
+            // Crisp Light Positron Basemap
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 20,
+                subdomains: 'abcd',
+                attribution: '&copy; OpenStreetMap &copy; CARTO'
+            }).addTo(leafletMap);
+
+            mapLayers.roadNetwork = L.layerGroup().addTo(leafletMap);
+            mapLayers.desireLines = L.layerGroup().addTo(leafletMap);
+            mapLayers.queueExtents = L.layerGroup().addTo(leafletMap);
+            mapLayers.vehicleMarkers = L.layerGroup().addTo(leafletMap);
+        }
+
+        function renderSpatialMap(spatial, tracks) {
+            const center = spatial.intersection_center || {};
+            const lat = center.latitude || 18.5590;
+            const lon = center.longitude || 73.7868;
+
+            initLeafletMap(lat, lon);
+            if (!leafletMap) return;
+
+            leafletMap.setView([lat, lon], 18);
+
+            const flight = spatial.flight_telemetry || {};
+            document.getElementById('telemetrySummaryTag').textContent = 
+                `UAV GPS: ${(flight.center_latitude || lat).toFixed(4)}°, ${(flight.center_longitude || lon).toFixed(4)}° | ALT: ${flight.mean_altitude_meters || 85}M | GIMBAL: ${flight.mean_gimbal_pitch_deg || -90}°`;
+
+            // 1. Road Network Features
+            mapLayers.roadNetwork.clearLayers();
+            if (spatial.per_lane_metrics_geojson) {
+                L.geoJSON(spatial.per_lane_metrics_geojson, {
+                    style: (feature) => {
+                        return {
+                            color: '#09090b',
+                            weight: 2.5,
+                            opacity: 0.85,
+                            fillColor: '#09090b',
+                            fillOpacity: 0.08,
+                        };
+                    },
+                    onEachFeature: (feature, layer) => {
+                        const p = feature.properties || {};
+                        layer.bindPopup(`
+                            <div style="font-family:'JetBrains Mono', monospace; font-size:11px; line-height:1.5;">
+                                <b style="color:#09090b;">LANE ID: ${p.lane_id}</b><br/>
+                                Link: ${p.link_id} (${p.approach})<br/>
+                                Volume: ${p.traffic_volume || 0} veh<br/>
+                                Speed: ${p.average_speed_kmh || 50} km/h (Limit: ${p.speed_limit_kmh})
+                            </div>
+                        `);
+                    }
+                }).addTo(mapLayers.roadNetwork);
+            }
+
+            // 2. Desire Lines
+            mapLayers.desireLines.clearLayers();
+            if (spatial.desire_lines_geojson) {
+                L.geoJSON(spatial.desire_lines_geojson, {
+                    style: (feature) => {
+                        return {
+                            color: '#475569',
+                            weight: 2.5,
+                            opacity: 0.9,
+                            dashArray: '6, 6',
+                        };
+                    },
+                    onEachFeature: (feature, layer) => {
+                        const p = feature.properties || {};
+                        layer.bindPopup(`
+                            <div style="font-family:'JetBrains Mono', monospace; font-size:11px;">
+                                <b>CORRIDOR: ${p.origin} &rarr; ${p.destination}</b><br/>
+                                Trips: ${p.volume} (${p.proportion_pct}%)
+                            </div>
+                        `);
+                    }
+                }).addTo(mapLayers.desireLines);
+            }
+
+            // 3. Queue Extents
+            mapLayers.queueExtents.clearLayers();
+            if (spatial.queue_extents_geojson) {
+                L.geoJSON(spatial.queue_extents_geojson, {
+                    style: (feature) => {
+                        return {
+                            color: '#dc2626',
+                            weight: 6,
+                            opacity: 0.95,
+                        };
+                    },
+                    onEachFeature: (feature, layer) => {
+                        const p = feature.properties || {};
+                        layer.bindPopup(`
+                            <div style="font-family:'JetBrains Mono', monospace; font-size:11px;">
+                                <b style="color:#dc2626;">QUEUE EXTENT: ${p.lane_id}</b><br/>
+                                Length: ${p.queue_length_meters}m<br/>
+                                Queued: ${p.queued_vehicles_count} units
+                            </div>
+                        `);
+                    }
+                }).addTo(mapLayers.queueExtents);
+            }
+
+            // 4. Vehicle Markers
+            mapLayers.vehicleMarkers.clearLayers();
+            (tracks || []).forEach(t => {
+                const geo = t.geodetic_position || {};
+                if (geo.latitude && geo.longitude) {
+                    const fg = t.fine_grained_class || t.class_label || 'vehicle';
+                    const k = t.kinematics || {};
+                    const spd = (k.current_speed_kmh !== undefined ? k.current_speed_kmh : (k.average_speed_kmh || 0)).toFixed(1);
+
+                    const marker = L.circleMarker([geo.latitude, geo.longitude], {
+                        radius: 5,
+                        fillColor: '#09090b',
+                        color: '#ffffff',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 1,
+                    });
+
+                    marker.bindTooltip(`[#${t.track_id}] ${fg.toUpperCase()} (${spd} km/h)`, { permanent: false });
+                    marker.addTo(mapLayers.vehicleMarkers);
+                }
+            });
+        }
+
+        // ── Directional Flow Blueprint SVG (Light Technical Mode) ───────────
+        function renderDirectionFlowDiagram(data) {
+            const svg = document.getElementById('flowDiagramSVG');
+            if (!svg) return;
+
+            const macro = data.macroscopic_analytics || {};
+            const turns = macro.turning_movements?.movement_counts || {};
+            const props = macro.turning_movements?.movement_proportions_pct || {};
+
+            const throughCnt = turns['Through Movement'] || turns['Northbound Through'] || 42;
+            const leftCnt = turns['Left Turn'] || turns['Westbound Left'] || 18;
+            const rightCnt = turns['Right Turn'] || turns['Eastbound Right'] || 12;
+
+            svg.innerHTML = `
+                <defs>
+                    <marker id="arrowDark" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#09090b" />
+                    </marker>
+                    <marker id="arrowSlate" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#475569" />
+                    </marker>
+                    <marker id="arrowMuted" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#64748b" />
+                    </marker>
+                </defs>
+
+                <!-- Technical Blueprint Grid Lines -->
+                <line x1="0" y1="150" x2="960" y2="150" stroke="#e2e8f0" stroke-width="1" />
+                <line x1="0" y1="450" x2="960" y2="450" stroke="#e2e8f0" stroke-width="1" />
+                <line x1="300" y1="0" x2="300" y2="600" stroke="#e2e8f0" stroke-width="1" />
+                <line x1="660" y1="0" x2="660" y2="600" stroke="#e2e8f0" stroke-width="1" />
+
+                <!-- Road Surface Geometry -->
+                <rect x="360" y="0" width="240" height="600" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+                <rect x="0" y="180" width="960" height="240" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+
+                <!-- Road Centerlines -->
+                <line x1="480" y1="0" x2="480" y2="600" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10,10" />
+                <line x1="0" y1="300" x2="960" y2="300" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10,10" />
+
+                <!-- Central Conflict Hub -->
+                <circle cx="480" cy="300" r="50" fill="none" stroke="#09090b" stroke-width="1.5" stroke-dasharray="4,4" />
+                <circle cx="480" cy="300" r="8" fill="#09090b" />
+                
+                <text x="480" y="295" text-anchor="middle" fill="#09090b" font-size="11" font-weight="700" font-family="'Orbitron', sans-serif">BANER JUNCTION</text>
+                <text x="480" y="312" text-anchor="middle" fill="#64748b" font-size="9" font-family="'JetBrains Mono', monospace">CONFLICT NODE #01</text>
+
+                <!-- Approach Titles -->
+                <g font-family="'Rajdhani', sans-serif" font-size="11" font-weight="700" fill="#64748b" letter-spacing="1px">
+                    <text x="80" y="165">BANER RD (WESTBOUND APPROACH)</text>
+                    <text x="640" y="165">BANER RD (EASTBOUND APPROACH)</text>
+                    <text x="480" y="35" text-anchor="middle">PASHAN LINK RD (NORTH)</text>
+                    <text x="480" y="580" text-anchor="middle">HIGH ST COMMERCIAL (SOUTH)</text>
+                </g>
+
+                <!-- Flow Trajectories -->
+                <!-- Westbound Through -->
+                <path d="M 60 270 L 900 270" stroke="#09090b" stroke-width="5" fill="none" stroke-dasharray="14,8" class="laser-animated-light" marker-end="url(#arrowDark)" />
+                <text x="140" y="255" fill="#09090b" font-size="11" font-weight="700" font-family="'JetBrains Mono', monospace">THROUGH: ${throughCnt} VEH (${props['Through Movement'] || 55}%)</text>
+
+                <!-- Eastbound Through -->
+                <path d="M 900 330 L 60 330" stroke="#09090b" stroke-width="5" fill="none" stroke-dasharray="14,8" class="laser-animated-light" marker-end="url(#arrowDark)" />
+
+                <!-- Left Turn -->
+                <path d="M 60 270 Q 420 270 420 60" stroke="#475569" stroke-width="4" fill="none" stroke-dasharray="10,6" class="laser-animated-light" marker-end="url(#arrowSlate)" />
+                <text x="290" y="210" fill="#475569" font-size="11" font-weight="700" font-family="'JetBrains Mono', monospace">LEFT TURN: ${leftCnt} VEH</text>
+
+                <!-- Right Turn -->
+                <path d="M 60 270 Q 420 270 420 540" stroke="#64748b" stroke-width="4" fill="none" stroke-dasharray="10,6" class="laser-animated-light" marker-end="url(#arrowMuted)" />
+                <text x="290" y="390" fill="#64748b" font-size="11" font-weight="700" font-family="'JetBrains Mono', monospace">RIGHT TURN: ${rightCnt} VEH</text>
+
+                <!-- Queue Extent Ribbon -->
+                <line x1="80" y1="285" x2="340" y2="285" stroke="#dc2626" stroke-width="6" opacity="0.9" />
+                <text x="210" y="302" text-anchor="middle" fill="#dc2626" font-size="10" font-weight="700" font-family="'JetBrains Mono', monospace">QUEUE EXTENT: 48.5M</text>
+            `;
+        }
+
+        // ── Network Reasoning AI Diagnostics Renderer ──────────────────────
+        function renderNetworkReasoning(netData) {
+            if (!netData) return;
+
+            const orig = netData.congestion_origination || {};
+            const sig = netData.signal_performance || {};
+            const weave = netData.weaving_and_conflicts || {};
+            const desire = netData.desire_line_analysis || {};
+            const obst = netData.obstruction_census || {};
+            const narrative = netData.ai_network_explanation || '';
+
+            const narrativeBox = document.getElementById('reasoningNarrativeBox');
+            if (narrativeBox && narrative) {
+                narrativeBox.innerHTML = narrative
+                    .replace(/### (.*)/g, '<h4 style="font-family:var(--font-display); color:var(--text-heading); font-size:0.95rem; font-weight:700; margin:0.9rem 0 0.35rem 0; letter-spacing:0.06em; text-transform:uppercase;">$1</h4>')
+                    .replace(/#### (.*)/g, '<h5 style="font-family:var(--font-tactical); color:var(--text-secondary); font-size:0.86rem; font-weight:700; margin:0.65rem 0 0.25rem 0; letter-spacing:0.06em; text-transform:uppercase;">$1</h5>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--text-heading); font-weight:700;">$1</strong>')
+                    .replace(/\n/g, '<br/>');
+            }
+
+            document.getElementById('reasonJamOrigin').textContent = orig.origin_timestamp_formatted || '00:12S';
+            document.getElementById('reasonJamDetails').textContent = `${orig.origin_location_link || 'BANER RD'} // ${orig.shockwave_propagation_velocity_kmh || 14.5} KM/H SHOCKWAVE`;
+
+            document.getElementById('reasonSatFlow').textContent = `${sig.saturation_flow_rate_veh_h_lane || 1850} VEH/H`;
+            document.getElementById('reasonSignalDetails').textContent = `GREEN UTIL: ${sig.green_utilization_pct || 78.4}% // FAIL: ${sig.cycle_failure_rate_pct || 33.3}%`;
+
+            document.getElementById('reasonWeavingRate').textContent = `${weave.lane_change_rate_per_km || 14.2} /KM`;
+            document.getElementById('reasonConflictDetails').textContent = `CONFLICTS: ${weave.conflict_hotspots_count || 4} (PET < 1.5S)`;
+
+            document.getElementById('reasonDesireMismatch').textContent = `${desire.geometric_vs_behavioral_mismatch_pct || 34.5}%`;
+            document.getElementById('reasonDesireDetails').textContent = `STRADDLE: ${desire.lane_straddling_rate_pct || 18.7}% // CORNER CUTS: ${desire.corner_cutting_incidents || 8}`;
+
+            document.getElementById('reasonObstructions').textContent = `${obst.double_parking_events || 3} EVENTS`;
+            document.getElementById('reasonObstructionDetails').textContent = `DWELL: ${obst.average_dwell_duration_seconds || 42.5}S // CAP DROP: ${obst.capacity_reduction_impact_pct || 29.0}%`;
+        }
+
+        // ── Kinematics Table Renderer ───────────────────────────────────────
+        function renderKinematicsTable(tracks) {
+            const tbody = document.getElementById('kinematicsTableBody');
+            const filter = (trackSearch.value || '').toLowerCase().trim();
+
+            const filtered = tracks.filter(t => {
+                if (!filter) return true;
+                const idStr = String(t.track_id);
+                const clsStr = (t.class_label || '').toLowerCase();
+                const fgStr = (t.fine_grained_class || '').toLowerCase();
+                return idStr.includes(filter) || clsStr.includes(filter) || fgStr.includes(filter);
             });
 
-            marker.bindTooltip(`#${t.track_id} ${fg} (${spd} km/h)<br/>${geo.link_name || ''} [${geo.lane_id || ''}]`, { permanent: false });
-            marker.addTo(mapLayers.vehicleMarkers);
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted); padding: 2.5rem; font-family:var(--font-mono);">NO TARGET TRACKS FOUND IN SENSOR BUFFER.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(t => {
+                const k = t.kinematics || {};
+                const fg = t.fine_grained_class || t.class_label;
+                const parent = t.class_label || 'unknown';
+                const speedKmh = (k.current_speed_kmh !== undefined ? k.current_speed_kmh : (k.average_speed_kmh || 0)).toFixed(1);
+                const speedMs = (k.current_speed_ms !== undefined ? k.current_speed_ms : 0).toFixed(2);
+                const accelMs2 = (k.current_acceleration_ms2 !== undefined ? k.current_acceleration_ms2 : 0).toFixed(2);
+                const accelSign = accelMs2 >= 0 ? '+' : '';
+                const heading = (k.heading_degrees !== undefined ? k.heading_degrees.toFixed(0) : '0') + '° ' + (k.cardinal_direction || '');
+                const dist = (k.distance_traveled_meters || 0).toFixed(1);
+                const status = k.motion_status || 'Cruising';
+
+                let statusBadge = 'badge-hud';
+                if (status === 'Cruising') statusBadge = 'badge-hud badge-hud-success';
+                else if (status === 'Accelerating') statusBadge = 'badge-hud badge-hud-warning';
+                else if (status === 'Braking') statusBadge = 'badge-hud badge-hud-danger';
+
+                return `
+                    <tr>
+                        <td style="font-weight: 700; color: var(--text-heading);">#${t.track_id}</td>
+                        <td style="text-transform: uppercase;">${parent}</td>
+                        <td><span class="pill-hud">${fg.replace('_', ' ')}</span></td>
+                        <td style="font-weight: 700; color: var(--text-heading);">${speedKmh} km/h</td>
+                        <td>${speedMs} m/s</td>
+                        <td>${accelSign}${accelMs2} m/s²</td>
+                        <td>${heading}</td>
+                        <td>${dist} m</td>
+                        <td><span class="${statusBadge}">${status.toUpperCase()}</span></td>
+                    </tr>
+                `;
+            }).join('');
         }
-    });
-}
 
-// ── Direction Flow Diagram SVG Renderer ────────────
-function renderDirectionFlowDiagram(data) {
-    const svg = document.getElementById('flowDiagramSVG');
-    if (!svg) return;
-
-    const macro = data.macroscopic_analytics || {};
-    const turns = macro.turning_movements?.movement_counts || {};
-    const props = macro.turning_movements?.movement_proportions_pct || {};
-
-    const throughCnt = turns['Through Movement'] || turns['Northbound Through'] || 42;
-    const leftCnt = turns['Left Turn'] || turns['Westbound Left'] || 18;
-    const rightCnt = turns['Right Turn'] || turns['Eastbound Right'] || 12;
-    const uturnCnt = turns['U-Turn'] || 5;
-
-    svg.innerHTML = `
-        <defs>
-            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-                <polygon points="0 0, 8 3, 0 6" fill="#3b82f6" />
-            </marker>
-            <marker id="arrowLeft" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-                <polygon points="0 0, 8 3, 0 6" fill="#8b5cf6" />
-            </marker>
-            <marker id="arrowRight" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-                <polygon points="0 0, 8 3, 0 6" fill="#ec4899" />
-            </marker>
-            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="3" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-        </defs>
-
-        <!-- Intersection Road Surface -->
-        <rect x="360" y="0" width="240" height="600" fill="#1e293b" opacity="0.4" />
-        <rect x="0" y="180" width="960" height="240" fill="#1e293b" opacity="0.4" />
-
-        <!-- Road Centerlines -->
-        <line x1="480" y1="0" x2="480" y2="600" stroke="#334155" stroke-width="2" stroke-dasharray="10,10" />
-        <line x1="0" y1="300" x2="960" y2="300" stroke="#334155" stroke-width="2" stroke-dasharray="10,10" />
-
-        <!-- Central Junction Box -->
-        <rect x="360" y="180" width="240" height="240" fill="none" stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,6" opacity="0.6" />
-        <circle cx="480" cy="300" r="45" fill="rgba(59,130,246,0.1)" stroke="#3b82f6" stroke-width="2" filter="url(#glow)" />
-        <text x="480" y="296" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="700" font-family="Inter, sans-serif">BANER JUNCTION</text>
-        <text x="480" y="312" text-anchor="middle" fill="#64748b" font-size="10" font-family="Inter, sans-serif">Conflict Node #1</text>
-
-        <!-- Approach Labels -->
-        <g font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#94a3b8">
-            <text x="100" y="165">BANER RD (WESTBOUND APPROACH)</text>
-            <text x="640" y="165">BANER RD (EASTBOUND APPROACH)</text>
-            <text x="480" y="30" text-anchor="middle">PASHAN LINK RD (NORTH)</text>
-            <text x="480" y="580" text-anchor="middle">HIGH ST COMMERCIAL (SOUTH)</text>
-        </g>
-
-        <!-- Flow Vectors -->
-        <!-- Westbound Through Flow -->
-        <path d="M 60 270 L 900 270" stroke="#3b82f6" stroke-width="6" fill="none" stroke-dasharray="12,8" class="flow-arrow-animated" marker-end="url(#arrowhead)" />
-        <text x="180" y="255" fill="#60a5fa" font-size="11" font-weight="700" font-family="Inter, sans-serif">THROUGH: ${throughCnt} veh (${props['Through Movement'] || 55}%)</text>
-
-        <!-- Eastbound Through Flow -->
-        <path d="M 900 330 L 60 330" stroke="#3b82f6" stroke-width="6" fill="none" stroke-dasharray="12,8" class="flow-arrow-animated" marker-end="url(#arrowhead)" />
-
-        <!-- Left Turn Curve -->
-        <path d="M 60 270 Q 420 270 420 60" stroke="#8b5cf6" stroke-width="5" fill="none" stroke-dasharray="10,6" class="flow-arrow-animated" marker-end="url(#arrowLeft)" />
-        <text x="290" y="210" fill="#c084fc" font-size="11" font-weight="700" font-family="Inter, sans-serif">LEFT TURN: ${leftCnt} veh</text>
-
-        <!-- Right Turn Curve -->
-        <path d="M 60 270 Q 420 270 420 540" stroke="#ec4899" stroke-width="5" fill="none" stroke-dasharray="10,6" class="flow-arrow-animated" marker-end="url(#arrowRight)" />
-        <text x="290" y="390" fill="#f472b6" font-size="11" font-weight="700" font-family="Inter, sans-serif">RIGHT TURN: ${rightCnt} veh</text>
-
-        <!-- Queue Extent Ribbon on Approach -->
-        <line x1="80" y1="285" x2="340" y2="285" stroke="#ef4444" stroke-width="8" opacity="0.75" />
-        <text x="210" y="302" text-anchor="middle" fill="#fca5a5" font-size="10" font-weight="700" font-family="Inter, sans-serif">🛑 QUEUE EXTENT: 48.5m (Dwell Friction)</text>
-    `;
-}
-
-// ── Network Reasoning AI Diagnostics Renderer ────
-function renderNetworkReasoning(netData) {
-    if (!netData) return;
-
-    const orig = netData.congestion_origination || {};
-    const sig = netData.signal_performance || {};
-    const weave = netData.weaving_and_conflicts || {};
-    const desire = netData.desire_line_analysis || {};
-    const obst = netData.obstruction_census || {};
-    const narrative = netData.ai_network_explanation || '';
-
-    // Render Narrative Text
-    const narrativeBox = document.getElementById('reasoningNarrativeBox');
-    if (narrativeBox && narrative) {
-        narrativeBox.innerHTML = narrative
-            .replace(/### (.*)/g, '<h4 style="color:#c084fc; font-size:1.05rem; font-weight:700; margin:0.5rem 0 0.25rem 0;">$1</h4>')
-            .replace(/#### (.*)/g, '<h5 style="color:#93c5fd; font-size:0.9rem; font-weight:600; margin:0.5rem 0 0.2rem 0;">$1</h5>')
-            .replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--text-primary);">$1</strong>')
-            .replace(/\n/g, '<br/>');
-    }
-
-    // Render 5 KPI Cards
-    document.getElementById('reasonJamOrigin').textContent = orig.origin_timestamp_formatted || '00:12s';
-    document.getElementById('reasonJamDetails').textContent = `${orig.origin_location_link || 'Baner Rd'} (${orig.shockwave_propagation_velocity_kmh || 14.5} km/h shockwave)`;
-
-    document.getElementById('reasonSatFlow').textContent = `${sig.saturation_flow_rate_veh_h_lane || 1850} veh/h`;
-    document.getElementById('reasonSignalDetails').textContent = `Green Util: ${sig.green_utilization_pct || 78.4}% | Fail: ${sig.cycle_failure_rate_pct || 33.3}%`;
-
-    document.getElementById('reasonWeavingRate').textContent = `${weave.lane_change_rate_per_km || 14.2} /km`;
-    document.getElementById('reasonConflictDetails').textContent = `Conflicts: ${weave.conflict_hotspots_count || 4} PET < 1.5s`;
-
-    document.getElementById('reasonDesireMismatch').textContent = `${desire.geometric_vs_behavioral_mismatch_pct || 34.5}%`;
-    document.getElementById('reasonDesireDetails').textContent = `Straddle: ${desire.lane_straddling_rate_pct || 18.7}% | Corner Cuts: ${desire.corner_cutting_incidents || 8}`;
-
-    document.getElementById('reasonObstructions').textContent = `${obst.double_parking_events || 3} Events`;
-    document.getElementById('reasonObstructionDetails').textContent = `Avg Dwell: ${obst.average_dwell_duration_seconds || 42.5}s | Cap Loss: ${obst.capacity_reduction_impact_pct || 29.0}%`;
-}
-
-
-function renderKinematicsTable(tracks) {
-    const tbody = document.getElementById('kinematicsTableBody');
-    const filter = (trackSearch.value || '').toLowerCase().trim();
-
-    const filtered = tracks.filter(t => {
-        if (!filter) return true;
-        const idStr = String(t.track_id);
-        const clsStr = (t.class_label || '').toLowerCase();
-        const fgStr = (t.fine_grained_class || '').toLowerCase();
-        return idStr.includes(filter) || clsStr.includes(filter) || fgStr.includes(filter);
-    });
-
-    if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted); padding: 2rem;">No matching tracked objects found.</td></tr>`;
-        return;
-    }
-
-    tbody.innerHTML = filtered.map(t => {
-        const k = t.kinematics || {};
-        const fg = t.fine_grained_class || t.class_label;
-        const parent = t.class_label || 'unknown';
-        const speedKmh = (k.current_speed_kmh !== undefined ? k.current_speed_kmh : (k.average_speed_kmh || 0)).toFixed(1);
-        const speedMs = (k.current_speed_ms !== undefined ? k.current_speed_ms : 0).toFixed(2);
-        const accelMs2 = (k.current_acceleration_ms2 !== undefined ? k.current_acceleration_ms2 : 0).toFixed(2);
-        const accelSign = accelMs2 >= 0 ? '+' : '';
-        const heading = (k.heading_degrees !== undefined ? k.heading_degrees.toFixed(0) : '0') + '° ' + (k.cardinal_direction || '');
-        const dist = (k.distance_traveled_meters || 0).toFixed(1);
-        const status = k.motion_status || 'Cruising';
-
-        let statusBadge = 'badge-idle';
-        if (status === 'Cruising') statusBadge = 'badge-success';
-        else if (status === 'Accelerating') statusBadge = 'badge-warning';
-        else if (status === 'Braking') statusBadge = 'badge-danger';
-
-        return `
-            <tr>
-                <td style="font-weight: 700; color: var(--accent);">#${t.track_id}</td>
-                <td style="text-transform: capitalize; color: var(--text-secondary);">${parent}</td>
-                <td><span class="pill pill-${fg}">${fg.replace('_', ' ')}</span></td>
-                <td style="font-weight: 600; color: #38bdf8;">${speedKmh} km/h</td>
-                <td style="color: var(--text-muted);">${speedMs} m/s</td>
-                <td style="font-weight: 500;">${accelSign}${accelMs2} m/s²</td>
-                <td>${heading}</td>
-                <td>${dist} m</td>
-                <td><span class="badge ${statusBadge}">${status}</span></td>
-            </tr>
-        `;
-    }).join('');
-}
-
-trackSearch.addEventListener('input', () => {
-    renderKinematicsTable(currentTracks);
-});
-
-// ── File upload & processing ─────────────────────
-fileInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    statusText.textContent = `Uploading: ${file.name}...`;
-    statusDot.style.background = 'var(--accent)';
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-        const resp = await fetch('/api/upload', { method: 'POST', body: formData });
-        const data = await resp.json();
-        uploadedPath = data.path;
-        processBtn.disabled = false;
-        statusText.textContent = `Uploaded: ${file.name} — Click Process to start macroscopic analysis`;
-        statusDot.style.background = 'var(--warning)';
-
-        videoPlayer.src = URL.createObjectURL(file);
-        videoPlaceholder.classList.add('hidden');
-        videoBadge.textContent = 'Uploaded';
-        videoBadge.className = 'badge badge-processing';
-    } catch (err) {
-        statusText.textContent = `Upload failed: ${err.message}`;
-        statusDot.style.background = 'var(--danger)';
-    }
-});
-
-processBtn.addEventListener('click', startProcessing);
-reprocessBtn.addEventListener('click', startProcessing);
-
-async function startProcessing() {
-    processBtn.disabled = true;
-    reprocessBtn.disabled = true;
-    processingStatus.classList.remove('hidden');
-    progressBar.style.width = '0%';
-    processingText.textContent = 'Starting real-time tracking stream...';
-    statusDot.style.background = 'var(--accent)';
-    statusText.textContent = 'Tracking vehicles & computing kinematics live...';
-    videoBadge.textContent = 'Tracking Live';
-    videoBadge.className = 'badge badge-processing';
-
-    // Switch video container to live stream mode
-    videoPlayer.classList.add('hidden');
-    videoPlaceholder.classList.add('hidden');
-    liveStreamImg.classList.remove('hidden');
-    liveStreamImg.src = '/api/frame?t=' + Date.now();
-
-    // Start live frame refresh timer
-    if (frameStreamTimer) clearInterval(frameStreamTimer);
-    frameStreamTimer = setInterval(() => {
-        liveStreamImg.src = '/api/frame?t=' + Date.now();
-    }, 150);
-
-    try {
-        await fetch('/api/process', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ video_path: uploadedPath }),
+        trackSearch.addEventListener('input', () => {
+            renderKinematicsTable(currentTracks);
         });
-        pollStatus();
-    } catch (err) {
-        processingText.textContent = `Error: ${err.message}`;
-        statusDot.style.background = 'var(--danger)';
-    }
-}
 
-async function pollStatus() {
-    try {
-        const resp = await fetch('/api/status');
-        const data = await resp.json();
+        // ── Video Ingestion & Pipeline Triggers ──────────────────────────────
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
 
-        if (data.status === 'processing') {
-            const pct = Math.min(99, (data.progress || 0));
-            progressBar.style.width = pct + '%';
-            processingPct.textContent = pct.toFixed(1) + '%';
-            processingText.textContent = `Analyzing Frame ${data.frames_processed || 0} of ${data.total_frames || '...'} | ${data.unique_tracks || 0} tracks | ${data.detections || 0} detections`;
+            statusText.textContent = `INGESTING SENSOR FILE: ${file.name}...`;
+            statusDot.style.background = 'var(--text-heading)';
 
-            // Live-update ALL dashboard cards with real data from backend
-            if (data.macroscopic_analytics || data.kinematics_summary || data.tracks) {
-                displayResults(data);
-                videoBadge.textContent = `Tracking ${pct.toFixed(0)}%`;
-                videoBadge.className = 'badge badge-processing';
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const resp = await fetch('/api/upload', { method: 'POST', body: formData });
+                const data = await resp.json();
+                uploadedPath = data.path;
+                processBtn.disabled = false;
+                statusText.textContent = `FILE LOADED: ${file.name} // READY FOR EXECUTION`;
+                statusDot.style.background = 'var(--alert-warning)';
+
+                videoPlayer.src = URL.createObjectURL(file);
+                videoPlaceholder.classList.add('hidden');
+                videoBadge.textContent = 'BUFFERED';
+                videoBadge.className = 'badge-hud badge-hud-stark';
+            } catch (err) {
+                statusText.textContent = `INGESTION ERROR: ${err.message}`;
+                statusDot.style.background = 'var(--alert-danger)';
             }
+        });
 
-            setTimeout(pollStatus, 1000);
-        } else if (data.status === 'completed') {
-            progressBar.style.width = '100%';
-            processingPct.textContent = '100%';
-            processingText.textContent = 'Tracking & Analytics Complete!';
-            statusDot.style.background = 'var(--success)';
-            statusText.textContent = 'AERIX Active — Macroscopic & Object Intelligence Ready';
+        processBtn.addEventListener('click', startProcessing);
+        reprocessBtn.addEventListener('click', startProcessing);
 
-            if (frameStreamTimer) {
-                clearInterval(frameStreamTimer);
-                frameStreamTimer = null;
+        async function startProcessing() {
+            processBtn.disabled = true;
+            reprocessBtn.disabled = true;
+            processingStatus.classList.remove('hidden');
+            progressBar.style.width = '0%';
+            processingText.textContent = 'INITIALIZING MULTI-OBJECT TRACKING CORRELATOR...';
+            statusDot.style.background = 'var(--text-heading)';
+            statusText.textContent = 'TRACKING TARGETS & COMPUTING KINEMATICS...';
+            videoBadge.textContent = 'TRACKING LIVE';
+            videoBadge.className = 'badge-hud badge-hud-stark';
+
+            videoPlayer.classList.add('hidden');
+            videoPlaceholder.classList.add('hidden');
+            liveStreamImg.classList.remove('hidden');
+            liveStreamImg.src = '/api/frame?t=' + Date.now();
+
+            if (frameStreamTimer) clearInterval(frameStreamTimer);
+            frameStreamTimer = setInterval(() => {
+                liveStreamImg.src = '/api/frame?t=' + Date.now();
+            }, 150);
+
+            try {
+                await fetch('/api/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ video_path: uploadedPath }),
+                });
+                pollStatus();
+            } catch (err) {
+                processingText.textContent = `FATAL ERROR: ${err.message}`;
+                statusDot.style.background = 'var(--alert-danger)';
             }
-
-            setTimeout(async () => {
-                processingStatus.classList.add('hidden');
-                await loadResults();
-            }, 1000);
-        } else if (data.status === 'error') {
-            processingText.textContent = 'Error: ' + (data.result?.error || 'Unknown');
-            statusDot.style.background = 'var(--danger)';
-            processBtn.disabled = false;
-            if (frameStreamTimer) {
-                clearInterval(frameStreamTimer);
-                frameStreamTimer = null;
-            }
-        } else {
-            setTimeout(pollStatus, 1500);
         }
-    } catch (e) {
-        setTimeout(pollStatus, 2000);
-    }
-}
 
-// ── Init ────────────────────────────────────────
-loadResults();
-</script>
+        async function pollStatus() {
+            try {
+                const resp = await fetch('/api/status');
+                const data = await resp.json();
+
+                if (data.status === 'processing') {
+                    const pct = Math.min(99, (data.progress || 0));
+                    progressBar.style.width = pct + '%';
+                    processingPct.textContent = pct.toFixed(1) + '%';
+                    processingText.textContent = `FRAME ${data.frames_processed || 0}/${data.total_frames || '...'} // TRACKS: ${data.unique_tracks || 0} // DETECTIONS: ${data.detections || 0}`;
+
+                    if (data.macroscopic_analytics || data.kinematics_summary || data.tracks) {
+                        displayResults(data);
+                        videoBadge.textContent = `TRACKING ${pct.toFixed(0)}%`;
+                    }
+
+                    setTimeout(pollStatus, 1000);
+                } else if (data.status === 'completed') {
+                    progressBar.style.width = '100%';
+                    processingPct.textContent = '100%';
+                    processingText.textContent = 'TRACKING & MACROSCOPIC REASONING COMPLETE!';
+                    statusDot.style.background = 'var(--alert-success)';
+                    statusText.textContent = 'AERIX ACTIVE // FULL SYSTEM READY';
+
+                    if (frameStreamTimer) {
+                        clearInterval(frameStreamTimer);
+                        frameStreamTimer = null;
+                    }
+
+                    setTimeout(async () => {
+                        processingStatus.classList.add('hidden');
+                        await loadResults();
+                    }, 1000);
+                } else if (data.status === 'error') {
+                    processingText.textContent = 'ERROR: ' + (data.result?.error || 'UNKNOWN');
+                    statusDot.style.background = 'var(--alert-danger)';
+                    processBtn.disabled = false;
+                    if (frameStreamTimer) {
+                        clearInterval(frameStreamTimer);
+                        frameStreamTimer = null;
+                    }
+                } else {
+                    setTimeout(pollStatus, 1500);
+                }
+            } catch (e) {
+                setTimeout(pollStatus, 2000);
+            }
+        }
+
+        // ── Boot Initialization ─────────────────────────────────────────────
+        loadResults();
+    </script>
 </body>
 </html>
